@@ -1,0 +1,391 @@
+# Production-Grade Learning Management System (LMS) — 10/10 Implementation Plan
+
+A complete, enterprise-ready technical specification and execution plan based on `LMS-Complete-Feature-Blueprint.pdf`. This plan translates the 40+ modules across 5 phases into a concrete, scalable full-stack web application architecture.
+
+---
+
+## System Architecture & Technical Stack
+
+```
+                          ┌───────────────────────────────────────────────┐
+                          │            Client Layer (React/Next.js)      │
+                          │   - Student Portal | Admin | Instructor UI    │
+                          └───────────────────────┬───────────────────────┘
+                                                  │ HTTPS / REST / Server Actions / WS
+                                                  ▼
+                          ┌───────────────────────────────────────────────┐
+                          │            Next.js / API Gateway Server       │
+                          │   - Auth Middleware & CSRF Protection         │
+                          │   - Fine-Grained RBAC Guard (resource.action) │
+                          │   - Rate Limiting (Redis / Upstash)           │
+                          └─────────┬─────────────┬─────────────┬─────────┘
+                                    │             │             │
+               ┌────────────────────┘             │             └────────────────────┐
+               ▼                                  ▼                                  ▼
+   ┌───────────────────────┐          ┌───────────────────────┐          ┌───────────────────────┐
+   │   Database Layer      │          │   Media & Storage     │          │  Payments & Webhooks  │
+   │  PostgreSQL + Prisma  │          │ AWS S3 / Cloudflare R2│          │  Razorpay / Stripe    │
+   │  (Indexing + Partition)│         │ (Pre-signed Short URLs)│         │  (Server Reconciliation)│
+   └───────────────────────┘          └───────────────────────┘          └───────────────────────┘
+```
+
+### Technology Stack
+- **Frontend Framework**: Next.js 14+ (App Router, Server Components & Server Actions)
+- **Language & Styling**: TypeScript, Tailwind CSS, Shadcn UI / Radix UI, Lucide Icons, Framer Motion
+- **State & Data Fetching**: Zustand, TanStack Query (React Query)
+- **Database & ORM**: PostgreSQL, Prisma ORM (with migrations, relational indexing, transaction locks)
+- **Caching & Async Queues**: Redis / Upstash, BullMQ (for email jobs, video processing, stats rollup)
+- **Media Delivery & Storage**: AWS S3 / Cloudflare R2, HLS adaptive bitrate streaming with short-lived pre-signed tokens
+- **Payment Gateways**: Razorpay (India-first UPI/Cards/Netbanking), Stripe (Global Cards)
+- **Authentication**: NextAuth.js / Auth.js (OAuth, Credentials, 2FA with TOTP, Session refresh token rotation)
+- **Email & Notifications**: Resend / SendGrid with React Email templates
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Core Architectural Decision — Fine-Grained RBAC**:
+> As specified in the blueprint, we will avoid binary `isAdmin = true/false` models. We will implement a matrix-based Permission System where permissions follow `resource.action` syntax (e.g., `course.create`, `course.publish`, `user.block`, `banner.delete`). Roles (`Super Admin`, `Admin`, `Content Manager`, `Support Staff`, `Instructor`, `Student`) will be collections of permission tokens attached to request contexts.
+
+> [!WARNING]
+> **Video Security Standard**:
+> Raw media endpoints will never be exposed. All video playback will leverage private S3/R2 buckets served via time-bound (e.g., 5-minute expiry) signed URLs or tokenized HLS streaming playlists.
+
+---
+
+## Deferred / Features On Hold
+
+> [!NOTE]
+> 1. **Multi-Currency Dynamic Pricing**: On hold per user direction. Single base currency (e.g. INR / USD) will be used initially.
+> 2. **Phase 5 Code Execution Sandbox**: On hold per user direction. Standard quiz & assignment assessments will be prioritized.
+
+---
+
+## Infrastructure & Operating Expense Plan (AWS, DB, Media & Hosting)
+
+A transparent cost estimate for running the LMS across development, MVP launch, growth, and scale phases.
+
+| Category | Service Provider Options | MVP Tier (0 – 1k Active Users) | Growth Tier (1k – 10k Active Users) | Enterprise Tier (10k+ Active Users) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Relational Database (PostgreSQL)** | Managed PostgreSQL (Neon.tech / Supabase / AWS RDS) | **$0 – $19 / mo** *(Free tier / Serverless starter)* | **$50 – $150 / mo** *(Multi-AZ HA, 10GB-50GB, automatic backups)* | **$300 – $800+ / mo** *(Provisioned IOPS, Read Replicas)* |
+| **Object Storage (Videos, Files, Images)** | AWS S3 vs Cloudflare R2 *(R2 highly recommended for $0 egress)* | **$0 – $10 / mo** *(R2 includes 10GB free & $0 bandwidth fee)* | **$25 – $80 / mo** *(R2 cost based on storage only, saves $200+ vs S3 egress)* | **$150 – $400 / mo** *(Multi-terabyte video library)* |
+| **Video Transcoding & Streaming** | AWS MediaConvert / Cloudflare Stream / FFmpeg Workers | **$0 – $15 / mo** *(Manual HLS or lightweight worker)* | **$40 – $120 / mo** *(Automated multi-resolution HLS 1080p/720p/480p)* | **$200 – $600 / mo** *(High volume automated encoding pipeline)* |
+| **Redis Cache & BullMQ Queue** | Upstash Redis / AWS ElastiCache / Redis Cloud | **$0 – $10 / mo** *(Serverless pay-per-request)* | **$30 – $70 / mo** *(High availability cluster)* | **$120 – $300 / mo** *(Dedicated memory instance)* |
+| **Web Hosting & Compute API** | Vercel Pro / AWS ECS / Cloudflare Pages / Railway | **$0 – $20 / mo** *(Vercel Hobby / Pro base tier)* | **$40 – $120 / mo** *(Pro plan + serverless execution time)* | **$250 – $700 / mo** *(Autoscaling containers/ECS)* |
+| **Transactional Email & SMS** | Resend / SendGrid / AWS SES | **$0 – $10 / mo** *(Resend free 3,000 emails/mo)* | **$20 – $60 / mo** *(up to 100k emails/mo)* | **$100 – $300 / mo** *(Dedicated IP)* |
+| **Payment Gateway Fees** | Razorpay / Stripe | **2% (Razorpay) / 2.9% + $0.30 (Stripe)** *(Pay-per-sale)* | **Pay-per-sale** *(Volume rates negotiable)* | **Custom Enterprise rates** |
+| **ESTIMATED TOTAL FIXED COST** | | **~$20 – $69 / month** | **~$205 – $610 / month** | **~$1,120 – $3,100+ / month** |
+
+> [!TIP]
+> **Cost Optimization Recommendation**:
+> Using **Cloudflare R2** instead of standard AWS S3 eliminates data egress (bandwidth transfer) charges. For video-heavy LMS platforms, S3 bandwidth costs can quickly balloon to hundreds of dollars per month as students stream courses. R2 charges $0 for egress, keeping monthly infrastructure under $70 during MVP/Growth phases.
+
+
+## Proposed Implementation Phases & Module Breakdown
+
+---
+
+### Phase 1: MVP & Core Foundations (Launch Readiness)
+
+#### 1. Identity, Auth & Fine-Grained RBAC
+- **User Authentication**:
+  - Email/password signup with bcrypt hashing & email verification token workflow.
+  - OAuth 2.0 (Google, GitHub, Apple).
+  - Password reset with secure time-limited tokens.
+  - Session management with JWT refresh token rotation & revocation tracking in Redis.
+  - Optional 2FA TOTP (Authenticator apps) for privileged accounts.
+- **Database Schema**:
+  - `User`, `Account`, `Session`, `Role`, `Permission`, `RolePermission`, `UserRole`, `AuditLog`.
+
+#### 2. User & Admin Dashboards
+- **Student Dashboard**:
+  - "Continue Learning" banner with last-watched position resume CTA.
+  - Enrolled courses grid with completion progress bars.
+  - Earned certificates library.
+  - Wishlist & purchase history tab.
+  - Real-time learning stats (total hours, daily active streak).
+- **Admin Dashboard**:
+  - Key Platform KPIs (Total users, published vs draft courses, sales summary).
+  - Quick action shortcuts.
+
+#### 3. Granular User Management (Admin)
+- Paginated user list with full-text search by name/email, role filtering, status filters.
+- Admin actions: Create user, edit profile, block/unblock, force password reset, change role assignments.
+- Deep user snapshot: Enrolled courses, completion stats, order history, audit activity log.
+
+#### 4. Course & Curriculum Management (Admin)
+- **Course Hierarchy**: Course -> Section -> Lesson (Atomic content unit).
+- **Course CRUD**:
+  - Metadata: Title, subtitle, description, thumbnail, preview video, category/subcategory, tags, difficulty, language, pricing.
+  - Tree-view Curriculum Builder: Drag-and-drop section/lesson reordering, lesson content types (Video, PDF, Rich Text/HTML, Quiz).
+  - Course States: `Draft`, `Pending Approval`, `Published`, `Unpublished`, `Rejected`, `Archived`.
+
+#### 5. Secure Video Learning System
+- Player features: Speed control (0.5x–2x), quality selector, caption/subtitle tracks, PiP, keyboard shortcuts, auto-play next lesson.
+- Video Security: Private Cloudflare R2 / AWS S3 storage, pre-signed expiring stream URLs, server-side entitlement validation per request.
+- Auto-save watch position every 10 seconds to compute exact watch percentage & auto-mark completion at 90%.
+
+#### 6. Quiz & Certificate Engine
+- **Quiz System**:
+  - Question types: Single choice, multiple answer, True/False, Fill in the blank, Matching pairs.
+  - Configurations: Pass %, time limit, max attempts allowed, randomized question order, per-question explanations.
+  - Instant scoring screen with detailed answer reviews.
+- **Certificate System**:
+  - Automatic PDF generation upon 100% course completion.
+  - Unique Certificate ID, public verification link (`/verify/[certificateId]`), and QR code embedding.
+
+---
+
+### Phase 2: E-Commerce, Payments & Financial Engine
+
+#### 1. Cart, Checkout & Multi-Gateway Integration
+- **Shopping Cart**: Dynamic cart overlay and dedicated page with tax/discount calculation.
+- **Checkout Process**:
+  - **Razorpay**: Native SDK checkout integration for India (UPI, Netbanking, Cards).
+  - **Stripe**: Hosted & embedded payment element for global credit card processing.
+- **Strict Server-Side Verification**: Webhook handlers (`payment.captured`, `checkout.session.completed`) cryptographically verify signatures before unlocking course access in database transactions.
+
+#### 2. Coupons, Discounts & Invoicing
+- **Coupon System**: Percentage off, fixed amount, course-specific or category-wide scope, usage caps, per-user limits, expiry dates.
+- **Invoice Generation**: Automated PDF creation with itemized breakdown, tax/GST registration info, and download links in student dashboard.
+- **Refund Workflow**: Student submission -> Admin review & approval -> Automated gateway refund trigger -> Revocation of enrollment.
+
+---
+
+### Phase 3: Multi-Instructor Platform & Social Learning
+
+#### 1. Instructor System & Payouts
+- Instructor application & approval workflow.
+- Custom commission rate configuration per instructor.
+- Dedicated Instructor Portal: Course authoring, student analytics, earnings statements, payout requests.
+- Payout Engine: Automated earnings calculation after platform fee deduction.
+
+#### 2. Ratings, Reviews & Lesson Q&A
+- **Ratings & Reviews**: 1–5 star reviews with text feedback, star distribution chart, admin moderation queue for flagged reviews.
+- **Lesson Q&A**: Threaded Q&A tab under video player, instructor verified badges, "Mark as Accepted Answer", upvoting.
+- **Wishlist & Price Alerts**: One-click save to wishlist, dynamic notifications on price drops or promotional sales.
+- **Notifications**: Multi-channel delivery (In-app bell menu + transactional emails).
+
+---
+
+### Phase 4: CMS, SEO, Marketing & System Operations
+
+#### 1. Homepage & Content Management System (CMS)
+- CMS-Driven Homepage: Admin-configurable hero banner, featured categories grid, dynamic course carousels, testimonials section, customizable footer & FAQ.
+- Media Library: Platform-wide asset storage with MIME type validation, thumbnail generation, and alt-text SEO tagging.
+- Pages Management: Rich text editor for static pages (About Us, Terms, Privacy Policy, Refund Policy).
+
+#### 2. Blog Engine & SEO Suite
+- **Blog Management**: Post creation with categories, tags, cover image, author profiles, scheduled publishing.
+- **SEO Enhancements**: Structured JSON-LD schema (Course schema), auto-generated `sitemap.xml`, `robots.txt`, custom meta titles/descriptions, OpenGraph social preview tags.
+
+#### 3. Affiliate System & Operations
+- **Affiliate/Referral**: Unique referral link generator, conversion tracking cookies, commission dashboard.
+- **Support Tickets**: Ticket submission (Payment, Tech, Content), admin assignment, status updates, attachments.
+- **Audit Logs**: Tamper-evident admin action logging (User ID, IP address, timestamp, action type, resource diff).
+
+---
+
+### Phase 5: AI Features, Coding Sandbox & Mobile Ecosystem
+
+#### 1. AI Learning Assistant & AI Quiz Generator
+- Contextual AI Assistant: RAG-based chatbot answering student questions using video transcript embeddings.
+- AI Quiz Generator: Automated generation of quizzes from lesson summaries.
+
+#### 2. In-Browser Sandboxed Coding Exercises
+- Embedded Monaco Editor (VS Code core) with syntax highlighting.
+- Sandboxed Code Execution: Multi-language runner (Python, JavaScript, Java, C++) executing against test cases with pass/fail outputs.
+
+#### 3. Gamification & Mobile Readiness
+- Daily login & learning streaks, achievement badges, global course leaderboards.
+- Cross-platform API endpoints designed for React Native / Flutter mobile clients.
+
+---
+
+## Complete Database ERD Schema Structure (Prisma)
+
+```prisma
+// Core Tables Overview
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String          @unique
+  passwordHash  String?
+  image         String?
+  role          UserRoleEnum    @default(STUDENT)
+  isBlocked     Boolean         @default(false)
+  userRoles     UserRole[]
+  enrollments   Enrollment[]
+  progress      LessonProgress[]
+  quizAttempts  QuizAttempt[]
+  certificates  Certificate[]
+  orders        Order[]
+  reviews       Review[]
+  questions     Question[]
+  answers       Answer[]
+  auditLogs     AuditLog[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  description String?
+  permissions RolePermission[]
+  userRoles   UserRole[]
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  action      String           @unique // e.g. "course.publish"
+  description String?
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model UserRole {
+  userId String
+  roleId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+model Course {
+  id            String         @id @default(cuid())
+  title         String
+  slug          String         @unique
+  subtitle      String?
+  description   String?
+  thumbnail     String?
+  previewVideo  String?
+  price         Decimal        @db.Decimal(10, 2)
+  discountPrice Decimal?       @db.Decimal(10, 2)
+  status        CourseStatus   @default(DRAFT)
+  level         CourseLevel    @default(BEGINNER)
+  language      String         @default("English")
+  categoryId    String
+  category      Category       @relation(fields: [categoryId], references: [id])
+  sections      Section[]
+  enrollments   Enrollment[]
+  reviews       Review[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Section {
+  id          String   @id @default(cuid())
+  title       String
+  order       Int
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
+}
+
+model Lesson {
+  id          String           @id @default(cuid())
+  title       String
+  order       Int
+  contentType LessonType       @default(VIDEO)
+  videoUrl    String?
+  duration    Int?             // seconds
+  isFree      Boolean          @default(false)
+  sectionId   String
+  section     Section          @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  progress    LessonProgress[]
+  quizzes     Quiz[]
+  questions   Question[]
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, courseId])
+}
+
+model LessonProgress {
+  id             String   @id @default(cuid())
+  userId         String
+  lessonId       String
+  isCompleted    Boolean  @default(false)
+  watchTimeSec   Int      @default(0)
+  lastPositionSec Int     @default(0)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson         Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+enum UserRoleEnum {
+  SUPER_ADMIN
+  ADMIN
+  CONTENT_MANAGER
+  SUPPORT_STAFF
+  INSTRUCTOR
+  STUDENT
+}
+
+enum CourseStatus {
+  DRAFT
+  PENDING_APPROVAL
+  PUBLISHED
+  UNPUBLISHED
+  REJECTED
+  ARCHIVED
+}
+
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  ALL_LEVELS
+}
+
+enum LessonType {
+  VIDEO
+  PDF
+  TEXT
+  QUIZ
+  ASSIGNMENT
+  CODING
+}
+```
+
+---
+
+## Verification & Testing Strategy
+
+### 1. Automated Testing Suite
+- **Unit & Integration Tests (Vitest & Supertest)**:
+  - Test permission evaluation engine with mock users and permission sets.
+  - Test shopping cart, coupon application, and tax calculation functions.
+  - Test webhook signature validation logic for Razorpay & Stripe.
+- **End-to-End Tests (Playwright)**:
+  - Full student journey: Registration -> Browse course -> Add to cart -> Checkout simulation -> Access course video player -> Complete quiz -> Download certificate.
+  - Admin journey: Login -> Create course tree -> Upload video -> Publish course -> Verify user permissions.
+
+### 2. Manual Security & Performance Verification
+- **Video Access Verification**: Attempt direct URL fetch of video files without authentication headers to confirm private bucket access control.
+- **RBAC Guard Test**: Attempt cross-role API calls (e.g., Student hitting `/api/admin/users`) to verify immediate 403 Forbidden responses.
+- **Lighthouse Performance Audit**: Verify PageSpeed performance, SEO metadata, dynamic OpenGraph tags, and mobile accessibility scores >= 90.
