@@ -1,9 +1,18 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Play, Info, ChevronLeft, ChevronRight, Sparkles, ShieldCheck, Flame, Star, Award } from 'lucide-react';
+import { 
+  Play, 
+  Info, 
+  ChevronLeft, 
+  ChevronRight, 
+  ShieldCheck, 
+  Search, 
+  Bell, 
+  ChevronDown 
+} from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import CourseCard from '@/components/CourseCard';
 
@@ -23,12 +32,14 @@ export default function HomePage() {
     }
   }, [isInstructor, isAdmin, router]);
 
+  const HERO_BANNER_IMG = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=2000&q=80";
+
   const featuredCourse = courses[0] || {
     id: 'course-1',
     title: 'Full-Stack Next.js 14 & React Masterclass 2026',
     slug: 'full-stack-nextjs-react-masterclass',
-    subtitle: 'Build production-ready web apps with App Router, TypeScript, Prisma, MongoDB & Tailwind CSS from absolute zero to deployment.',
-    thumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=1600&q=80',
+    subtitle: 'Picking up where he left off in "Captain America: Civil War," Tom Holland\'s web-slinger returns in a film Vox calls "a soaring, fearless teenage dream."',
+    thumbnail: HERO_BANNER_IMG,
     discountPrice: 699,
     price: 3499
   };
@@ -39,7 +50,7 @@ export default function HomePage() {
 
   const trendingCourses = courses.slice().sort((a, b) => b.studentCount - a.studentCount);
   const topRatedCourses = courses.slice().sort((a, b) => b.rating - a.rating);
-  const webDevCourses = courses.filter(c => c.categoryName.toLowerCase().includes('web') || c.categoryName.toLowerCase().includes('react'));
+  const webDevCourses = courses.filter(c => c.categoryName?.toLowerCase().includes('web') || c.categoryName?.toLowerCase().includes('react'));
 
   // Horizontal Scroll Controls
   const scrollRow = (rowId: string, direction: 'left' | 'right') => {
@@ -51,86 +62,152 @@ export default function HomePage() {
   };
 
   return (
-    <div className="bg-black text-white min-h-screen pb-24 space-y-12">
-      {/* Hero Banner Section */}
-      <section className="relative w-full h-[80vh] min-h-[550px] flex items-end overflow-hidden">
-        {/* Background Image / Backdrop */}
+    <div className="bg-[#141414] text-white min-h-screen pb-20 font-sans antialiased selection:bg-red-600 selection:text-white">
+      
+      {/* Netflix Navigation Bar */}
+    
+
+      {/* Hero Showcase Section */}
+      <section className="relative w-full h-[85vh] min-h-[600px] flex items-center">
+        {/* Background Image Container */}
         <div className="absolute inset-0 z-0">
           <img
-            src={featuredCourse.thumbnail}
+            src={featuredCourse.thumbnail || HERO_BANNER_IMG}
             alt={featuredCourse.title}
-            className="w-full h-full object-cover object-center scale-105 filter brightness-75"
+            className="w-full h-full object-cover object-center"
           />
-          {/* Top-to-bottom and Bottom-to-top Gradient Overlays */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent" />
-          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/80 to-transparent" />
+          {/* Gradient Overlays matching Netflix Vignette */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#141414] via-[#141414]/40 to-transparent w-full md:w-2/3" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-black/30" />
         </div>
 
-        {/* Featured Content Hero Details */}
-        <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 pb-16 space-y-4 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E50914]/20 border border-[#E50914]/40 text-red-400 text-xs font-bold uppercase tracking-wider">
-            <Flame className="w-3.5 h-3.5 fill-current" />
-            <span>FEATURED SELECTION</span>
+        {/* Hero Content */}
+        <div className="relative z-10 px-4 sm:px-12 max-w-2xl mt-12 space-y-4">
+          {/* Category Dropdown Indicator / Brand Header */}
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-wide">
+              Movies
+            </h1>
+            <div className="bg-black/60 border border-white/20 text-white text-xs font-semibold px-2.5 py-1 rounded flex items-center gap-2 cursor-pointer">
+              <span>Genres</span>
+              <ChevronDown className="w-3 h-3" />
+            </div>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight drop-shadow-2xl">
-            {featuredCourse.title}
-          </h1>
+          {/* Movie Title Logo Styling */}
+          <div className="pt-2">
+            <h2 className="text-4xl sm:text-6xl font-black italic tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-red-500 to-red-600 drop-shadow-md">
+              {featuredCourse.title}
+            </h2>
+          </div>
 
-          <p className="text-slate-300 text-sm sm:text-base line-clamp-3 max-w-2xl leading-relaxed drop-shadow">
+          {/* Subtitle / Description */}
+          <p className="text-gray-200 text-sm sm:text-base line-clamp-3 leading-relaxed max-w-xl font-normal drop-shadow">
             {featuredCourse.subtitle}
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 pt-3">
+          {/* Hero CTA Buttons */}
+          <div className="flex items-center gap-3 pt-2">
             <Link
               href={`/course/${featuredCourse.slug}`}
-              className="bg-white hover:bg-slate-200 text-black font-extrabold px-7 py-3 rounded-md transition shadow-2xl flex items-center gap-2 text-sm"
+              className="inline-flex items-center gap-2 bg-white hover:bg-white/80 text-black font-bold px-6 py-2.5 rounded transition shadow"
             >
-              <Play className="w-5 h-5 fill-current" />
-              <span>Start Learning</span>
+              <Play className="w-5 h-5 fill-black" />
+              <span className="text-base">Play</span>
             </Link>
 
             <Link
               href={`/course/${featuredCourse.slug}`}
-              className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-bold px-6 py-3 rounded-md transition border border-white/20 flex items-center gap-2 text-sm"
+              className="inline-flex items-center gap-2 bg-gray-500/70 hover:bg-gray-500/50 text-white font-semibold px-6 py-2.5 rounded transition backdrop-blur-sm"
             >
               <Info className="w-5 h-5" />
-              <span>More Info</span>
+              <span className="text-base">More Info</span>
             </Link>
-
-            {isAdmin && (
-              <Link
-                href="/admin"
-                className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold px-5 py-3 rounded-md transition border border-amber-500/40 flex items-center gap-2 text-sm"
-              >
-                <ShieldCheck className="w-5 h-5 text-amber-400" />
-                <span>Admin Console</span>
-              </Link>
-            )}
           </div>
+        </div>
+
+        {/* Age Rating Badge */}
+        <div className="absolute right-0 bottom-36 bg-zinc-800/80 border-l-3 border-gray-200 text-gray-200 text-xs font-semibold px-3 py-1 backdrop-blur-sm">
+          U/A 13+
         </div>
       </section>
 
-      {/* Main Content Rows Area */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 space-y-10">
+      {/* Main Content Rows Section */}
+      <div className="relative z-20 px-4 sm:px-12 -mt-24 space-y-10">
 
-        {/* Row 1: Continue Learning (If enrolled) */}
+        {/* Top 10 Ranked Row */}
+        <section className="space-y-3 relative group/row">
+          <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
+            Top 10 Movies in India Today
+          </h2>
+
+          <div className="relative">
+            <button
+              onClick={() => scrollRow('row-top10', 'left')}
+              className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+              aria-label="Scroll left"
+            >
+              <ChevronLeft className="w-8 h-8" />
+            </button>
+
+            <div 
+              id="row-top10" 
+              className="flex items-center gap-2 overflow-x-auto no-scrollbar py-4 px-1 scroll-snap-x scrollbar-none"
+            >
+              {trendingCourses.slice(0, 10).map((course, idx) => (
+                <div 
+                  key={course.id || (course as any)._id || `top10-${idx}`} 
+                  className="relative flex items-center flex-shrink-0 w-44 sm:w-56 group/card cursor-pointer"
+                >
+                  {/* Large Stylized Number SVG */}
+                  <span className="text-[120px] sm:text-[140px] font-black leading-none text-black stroke-neutral-600 select-none -mr-6 z-0 font-sans tracking-tighter"
+                        style={{ WebkitTextStroke: '3px #595959' }}>
+                    {idx + 1}
+                  </span>
+
+                  {/* Course Card Component Wrapped */}
+                  <div className="relative z-10 w-28 sm:w-36 flex-shrink-0 transition-transform duration-300 group-hover/card:scale-105">
+                    <CourseCard course={course} />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => scrollRow('row-top10', 'right')}
+              className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+              aria-label="Scroll right"
+            >
+              <ChevronRight className="w-8 h-8" />
+            </button>
+          </div>
+        </section>
+
+        {/* Continue Watching Row (If enrolled) */}
         {enrolledCourses.length > 0 && (
           <section className="space-y-3 relative group/row">
-            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-wide">Continue Learning</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
+              Continue Watching for {currentUser.name || 'User'}
+            </h2>
 
             <div className="relative">
               <button
                 onClick={() => scrollRow('row-continue', 'left')}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-40 w-10 h-24 bg-black/70 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/90 transition border-r border-white/10"
+                className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                aria-label="Scroll left"
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronLeft className="w-8 h-8" />
               </button>
 
-              <div id="row-continue" className="flex items-center gap-4 overflow-x-auto no-scrollbar py-4 scroll-snap-x">
+              <div 
+                id="row-continue" 
+                className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 scroll-snap-x scrollbar-none"
+              >
                 {enrolledCourses.map((course, idx) => (
-                  <div key={course.id || (course as any)._id || `cont-${idx}`} className="w-64 sm:w-72 flex-shrink-0 scroll-snap-align-start">
+                  <div 
+                    key={course.id || (course as any)._id || `cont-${idx}`} 
+                    className="w-48 sm:w-64 flex-shrink-0 transition-transform duration-300 hover:scale-105"
+                  >
                     <CourseCard course={course} />
                   </div>
                 ))}
@@ -138,64 +215,39 @@ export default function HomePage() {
 
               <button
                 onClick={() => scrollRow('row-continue', 'right')}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-40 w-10 h-24 bg-black/70 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/90 transition border-l border-white/10"
+                className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                aria-label="Scroll right"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronRight className="w-8 h-8" />
               </button>
             </div>
           </section>
         )}
 
-        {/* Row 2: Trending Modules */}
+        {/* Top Rated Row */}
         <section className="space-y-3 relative group/row">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-wide">Trending Courses</h2>
-            <Link href="/courses" className="text-xs font-semibold text-red-500 hover:underline">Explore All &rarr;</Link>
-          </div>
-
-          <div className="relative">
-            <button
-              onClick={() => scrollRow('row-trending', 'left')}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-40 w-10 h-24 bg-black/70 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/90 transition border-r border-white/10"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-
-            <div id="row-trending" className="flex items-center gap-4 overflow-x-auto no-scrollbar py-4 scroll-snap-x">
-              {trendingCourses.map((course, idx) => (
-                <div key={course.id || (course as any)._id || `trend-${idx}`} className="w-64 sm:w-72 flex-shrink-0 scroll-snap-align-start">
-                  <CourseCard course={course} />
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={() => scrollRow('row-trending', 'right')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-40 w-10 h-24 bg-black/70 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/90 transition border-l border-white/10"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </div>
-        </section>
-
-        {/* Row 3: Top Rated Modules */}
-        <section className="space-y-3 relative group/row">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-wide">Top Rated Courses</h2>
-            <Link href="/courses?sort=RATING" className="text-xs font-semibold text-red-500 hover:underline">Explore All &rarr;</Link>
-          </div>
+          <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
+            Top Rated Masterclasses
+          </h2>
 
           <div className="relative">
             <button
               onClick={() => scrollRow('row-toprated', 'left')}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-40 w-10 h-24 bg-black/70 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/90 transition border-r border-white/10"
+              className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+              aria-label="Scroll left"
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-8 h-8" />
             </button>
 
-            <div id="row-toprated" className="flex items-center gap-4 overflow-x-auto no-scrollbar py-4 scroll-snap-x">
+            <div 
+              id="row-toprated" 
+              className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 scroll-snap-x scrollbar-none"
+            >
               {topRatedCourses.map((course, idx) => (
-                <div key={course.id || (course as any)._id || `top-${idx}`} className="w-64 sm:w-72 flex-shrink-0 scroll-snap-align-start">
+                <div 
+                  key={course.id || (course as any)._id || `top-${idx}`} 
+                  className="w-48 sm:w-64 flex-shrink-0 transition-transform duration-300 hover:scale-105"
+                >
                   <CourseCard course={course} />
                 </div>
               ))}
@@ -203,44 +255,54 @@ export default function HomePage() {
 
             <button
               onClick={() => scrollRow('row-toprated', 'right')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-40 w-10 h-24 bg-black/70 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/90 transition border-l border-white/10"
+              className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+              aria-label="Scroll right"
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight className="w-8 h-8" />
             </button>
           </div>
         </section>
 
-        {/* Row 4: Web Development & AI Channel */}
-        <section className="space-y-3 relative group/row">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-wide">Web Development & AI Channel</h2>
-            <Link href="/courses?category=web-development" className="text-xs font-semibold text-red-500 hover:underline">Explore All &rarr;</Link>
-          </div>
+        {/* Web Development Channel Row */}
+        {webDevCourses.length > 0 && (
+          <section className="space-y-3 relative group/row">
+            <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
+              Web Development & Tech
+            </h2>
 
-          <div className="relative">
-            <button
-              onClick={() => scrollRow('row-webdev', 'left')}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-40 w-10 h-24 bg-black/70 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/90 transition border-r border-white/10"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => scrollRow('row-webdev', 'left')}
+                className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-8 h-8" />
+              </button>
 
-            <div id="row-webdev" className="flex items-center gap-4 overflow-x-auto no-scrollbar py-4 scroll-snap-x">
-              {webDevCourses.map((course, idx) => (
-                <div key={course.id || (course as any)._id || `webdev-${idx}`} className="w-64 sm:w-72 flex-shrink-0 scroll-snap-align-start">
-                  <CourseCard course={course} />
-                </div>
-              ))}
+              <div 
+                id="row-webdev" 
+                className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 scroll-snap-x scrollbar-none"
+              >
+                {webDevCourses.map((course, idx) => (
+                  <div 
+                    key={course.id || (course as any)._id || `webdev-${idx}`} 
+                    className="w-48 sm:w-64 flex-shrink-0 transition-transform duration-300 hover:scale-105"
+                  >
+                    <CourseCard course={course} />
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => scrollRow('row-webdev', 'right')}
+                className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-8 h-8" />
+              </button>
             </div>
-
-            <button
-              onClick={() => scrollRow('row-webdev', 'right')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-40 w-10 h-24 bg-black/70 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/90 transition border-l border-white/10"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </div>
-        </section>
+          </section>
+        )}
 
       </div>
     </div>
