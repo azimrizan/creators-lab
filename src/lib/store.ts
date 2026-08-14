@@ -308,7 +308,7 @@ export const useAppStore = create<AppStore>()(
       }
     }),
     {
-      name: 'lms-app-store-v3'
+      name: 'lms-app-store-v4'
     }
   )
 );

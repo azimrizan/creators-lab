@@ -2,9 +2,17 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Clapperboard, ShieldCheck, Sparkles } from 'lucide-react';
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  // Hide global footer on full-screen watch pages to keep theater player & AI agent clean
+  if (pathname?.startsWith('/watch')) {
+    return null;
+  }
+
   return (
     <footer className="bg-[#0B0B0B] border-t border-white/10 text-[#B3B3B3] text-xs">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 py-16 grid grid-cols-1 md:grid-cols-4 gap-10">

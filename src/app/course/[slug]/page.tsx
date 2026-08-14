@@ -13,7 +13,7 @@ export default function CourseDetailsPage() {
   const { courses, currentUser, cartCourseIds, addToCart, wishlistCourseIds, toggleWishlist, enrollUserInCourse } = useAppStore();
 
   const slug = params.slug as string;
-  const course = courses.find(c => c.slug === slug) || courses[0];
+  const course = courses.find(c => c.slug === slug || c.id === slug) || courses.find(c => c.slug === 'introduction-to-visual-storytelling') || courses[0];
   const courseId = course.id || (course as any)._id || course.slug;
 
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({

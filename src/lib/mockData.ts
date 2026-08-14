@@ -197,54 +197,55 @@ export const MOCK_COURSES: Course[] = [
   },
   {
     id: 'course-2',
-    title: 'Python for Beginners to AI Engineering 2026',
-    slug: 'python-beginners-to-ai-engineering',
-    subtitle: 'From core syntax, OOP, and data structures to building real LLM applications with OpenAI & LangChain.',
-    description: 'Learn Python programming from scratch and elevate your skill set to AI engineering. Build AI agents, text summarizers, and interactive web tools.',
-    thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
-    previewVideoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+    title: 'Introduction to Visual Storytelling',
+    slug: 'introduction-to-visual-storytelling',
+    subtitle: 'Master framing, Rule of Thirds, lens choices, depth of field & composition techniques with legendary filmmaker Philip Bloom.',
+    description: 'Learn the foundational principles of visual storytelling from acclaimed cinematographer Philip Bloom. Discover how to arrange subjects within the frame, harness lens compression, control lighting contrast, and tell immersive stories through camera language.',
+    thumbnail: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=800&q=80',
+    previewVideoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
     price: 2999,
     discountPrice: 499,
     status: 'PUBLISHED',
     level: 'BEGINNER',
     language: 'English',
-    categoryId: 'cat-2',
-    categoryName: 'Python & Data Science',
-    subcategory: 'Python Basics',
-    tags: ['Python', 'AI', 'Machine Learning', 'Data Science'],
+    categoryId: 'cat-3',
+    categoryName: 'UI/UX & Product Design',
+    subcategory: 'Visual Arts & Composition',
+    tags: ['Visual Storytelling', 'Cinematography', 'Filmmaking', 'Rule of Thirds', 'Composition'],
     instructorId: 'user-2',
-    instructorName: 'Dr. Rahul Verma',
+    instructorName: 'Philip Bloom & Dr. Rahul Verma',
     instructorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80',
-    instructorTitle: 'Senior AI Research Engineer',
-    rating: 4.8,
-    reviewCount: 980,
-    studentCount: 12100,
+    instructorTitle: 'Master Cinematographer & Educator',
+    rating: 4.9,
+    reviewCount: 1850,
+    studentCount: 15400,
     whatYouWillLearn: [
-      'Master fundamental Python syntax, loops, functions & error handling',
-      'Understand Object-Oriented Programming (OOP) principles',
-      'Work with Pandas, NumPy, and Matplotlib for data processing',
-      'Build generative AI projects using OpenAI APIs'
+      'Master composition techniques and the Rule of Thirds grid',
+      'Understand framing styles: One-point perspective, Central framing & Lead space',
+      'Choose the right lens focal lengths (10mm to 400mm) and handle lens compression',
+      'Eliminate facial distortion using natural 50mm–90mm portrait range lenses',
+      'Utilize shallow depth of field, contrast, and light to direct viewer attention'
     ],
-    prerequisites: ['No prior programming experience required'],
+    prerequisites: ['No prior filmmaking or camera experience required'],
     sections: [
       {
         id: 'sec-21',
-        title: 'Section 1: Introduction to Python Syntax',
+        title: 'Section 1: Visual Storytelling Foundations & Camera Language',
         order: 1,
         lessons: [
           {
             id: 'les-21',
-            title: '1. Python Installation & VS Code Setup',
+            title: '1. Visual Storytelling 101: Composition, Lenses & Framing',
             order: 1,
             contentType: 'VIDEO',
-            durationSeconds: 510,
-            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoybacks.mp4',
+            durationSeconds: 815,
+            videoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
             isFreePreview: true
           }
         ]
       }
     ],
-    updatedAt: '2026-01-20'
+    updatedAt: '2026-02-14'
   },
   {
     id: 'course-3',
