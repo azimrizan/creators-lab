@@ -50,7 +50,10 @@ export default function HomePage() {
 
   const trendingCourses = courses.slice().sort((a, b) => b.studentCount - a.studentCount);
   const topRatedCourses = courses.slice().sort((a, b) => b.rating - a.rating);
-  const webDevCourses = courses.filter(c => c.categoryName?.toLowerCase().includes('web') || c.categoryName?.toLowerCase().includes('react'));
+  const webDevCourses = courses.filter(c => c.categoryName?.toLowerCase().includes('web') || c.categoryName?.toLowerCase().includes('react') || c.tags?.some(t => t.toLowerCase().includes('security')));
+  const aiCourses = courses.filter(c => c.categoryName?.toLowerCase().includes('python') || c.categoryName?.toLowerCase().includes('data') || c.tags?.some(t => t.toLowerCase().includes('ai')));
+  const designCourses = courses.filter(c => c.categoryName?.toLowerCase().includes('design') || c.tags?.some(t => t.toLowerCase().includes('storytelling') || t.toLowerCase().includes('figma')));
+  const devopsCourses = courses.filter(c => c.categoryName?.toLowerCase().includes('cloud') || c.categoryName?.toLowerCase().includes('devops'));
 
   // Horizontal Scroll Controls
   const scrollRow = (rowId: string, direction: 'left' | 'right') => {
@@ -295,6 +298,129 @@ export default function HomePage() {
 
               <button
                 onClick={() => scrollRow('row-webdev', 'right')}
+                className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-8 h-8" />
+              </button>
+            </div>
+          </section>
+        )}
+
+        {/* AI & Machine Learning Channel Row */}
+        {aiCourses.length > 0 && (
+          <section className="space-y-3 relative group/row">
+            <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
+              Artificial Intelligence & Machine Learning
+            </h2>
+
+            <div className="relative">
+              <button
+                onClick={() => scrollRow('row-ai', 'left')}
+                className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-8 h-8" />
+              </button>
+
+              <div 
+                id="row-ai" 
+                className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 scroll-snap-x scrollbar-none"
+              >
+                {aiCourses.map((course, idx) => (
+                  <div 
+                    key={course.id || (course as any)._id || `ai-${idx}`} 
+                    className="w-48 sm:w-64 flex-shrink-0 transition-transform duration-300 hover:scale-105"
+                  >
+                    <CourseCard course={course} />
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => scrollRow('row-ai', 'right')}
+                className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-8 h-8" />
+              </button>
+            </div>
+          </section>
+        )}
+
+        {/* UI/UX & Design Systems Row */}
+        {designCourses.length > 0 && (
+          <section className="space-y-3 relative group/row">
+            <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
+              UI/UX, Filmmaking & Design Systems
+            </h2>
+
+            <div className="relative">
+              <button
+                onClick={() => scrollRow('row-design', 'left')}
+                className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-8 h-8" />
+              </button>
+
+              <div 
+                id="row-design" 
+                className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 scroll-snap-x scrollbar-none"
+              >
+                {designCourses.map((course, idx) => (
+                  <div 
+                    key={course.id || (course as any)._id || `design-${idx}`} 
+                    className="w-48 sm:w-64 flex-shrink-0 transition-transform duration-300 hover:scale-105"
+                  >
+                    <CourseCard course={course} />
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => scrollRow('row-design', 'right')}
+                className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-8 h-8" />
+              </button>
+            </div>
+          </section>
+        )}
+
+        {/* Cloud & DevOps Row */}
+        {devopsCourses.length > 0 && (
+          <section className="space-y-3 relative group/row">
+            <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
+              Cloud Computing & DevOps
+            </h2>
+
+            <div className="relative">
+              <button
+                onClick={() => scrollRow('row-devops', 'left')}
+                className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-8 h-8" />
+              </button>
+
+              <div 
+                id="row-devops" 
+                className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 scroll-snap-x scrollbar-none"
+              >
+                {devopsCourses.map((course, idx) => (
+                  <div 
+                    key={course.id || (course as any)._id || `devops-${idx}`} 
+                    className="w-48 sm:w-64 flex-shrink-0 transition-transform duration-300 hover:scale-105"
+                  >
+                    <CourseCard course={course} />
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => scrollRow('row-devops', 'right')}
                 className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
                 aria-label="Scroll right"
               >

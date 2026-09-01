@@ -31,7 +31,7 @@ export default function InstructorPage() {
       slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       subtitle,
       description: subtitle,
-      thumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=800&q=80',
+      thumbnail: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
       previewVideoUrl: videoUrl,
       price,
       discountPrice,

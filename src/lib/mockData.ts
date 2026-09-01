@@ -75,7 +75,7 @@ export const MOCK_COURSES: Course[] = [
     slug: 'full-stack-nextjs-react-masterclass',
     subtitle: 'Build production-ready web apps with App Router, TypeScript, Prisma, MongoDB & Tailwind CSS from absolute zero to deployment.',
     description: 'Master modern full-stack web development with Next.js 14+. In this comprehensive bootcamp, you will build 4 real-world projects including a SaaS platform, an e-commerce shop, and an AI dashboard.',
-    thumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=800&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
     previewVideoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
     price: 3499,
     discountPrice: 699,
@@ -296,6 +296,159 @@ export const MOCK_COURSES: Course[] = [
       }
     ],
     updatedAt: '2026-02-05'
+  },
+  {
+    id: 'course-4',
+    title: 'Python for AI, Deep Learning & LLM Systems',
+    slug: 'python-ai-deep-learning-llms',
+    subtitle: 'Build autonomous AI agents, fine-tune neural models, and deploy production machine learning pipelines.',
+    description: 'A comprehensive journey into modern Artificial Intelligence. Learn Python data science libraries, PyTorch neural networks, embeddings, vector databases, and RAG architectures.',
+    thumbnail: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80',
+    previewVideoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    price: 3999,
+    discountPrice: 799,
+    status: 'PUBLISHED',
+    level: 'INTERMEDIATE',
+    language: 'English',
+    categoryId: 'cat-2',
+    categoryName: 'Python & Data Science',
+    subcategory: 'Machine Learning',
+    tags: ['Python', 'AI', 'PyTorch', 'Machine Learning', 'LLMs'],
+    instructorId: 'user-2',
+    instructorName: 'Dr. Rahul Verma',
+    instructorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80',
+    instructorTitle: 'AI Research Scientist & Author',
+    rating: 4.95,
+    reviewCount: 2130,
+    studentCount: 22800,
+    whatYouWillLearn: [
+      'Build generative AI apps with LangChain, LlamaIndex, and Vector DBs',
+      'Train Convolutional and Recurrent neural networks with PyTorch',
+      'Fine-tune open source LLMs on custom dataset formats',
+      'Deploy AI model endpoints with FastAPI and Docker'
+    ],
+    prerequisites: ['Basic programming fundamentals'],
+    sections: [
+      {
+        id: 'sec-41',
+        title: 'Section 1: AI & Neural Network Foundations',
+        order: 1,
+        lessons: [
+          {
+            id: 'les-41',
+            title: '1. Introduction to Modern AI & Python Ecosystem',
+            order: 1,
+            contentType: 'VIDEO',
+            durationSeconds: 720,
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+            isFreePreview: true
+          }
+        ]
+      }
+    ],
+    updatedAt: '2026-02-18'
+  },
+  {
+    id: 'course-5',
+    title: 'Cloud DevOps Masterclass: AWS, Docker & Kubernetes',
+    slug: 'cloud-devops-masterclass-aws-docker-kubernetes',
+    subtitle: 'Architect resilient cloud infrastructure, automate CI/CD pipelines, and manage microservices clusters at scale.',
+    description: 'Learn enterprise DevOps practices from scratch. Master Linux server management, Docker containerization, Kubernetes orchestration, Terraform Infrastructure as Code, and GitHub Actions CI/CD.',
+    thumbnail: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80',
+    previewVideoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    price: 3499,
+    discountPrice: 749,
+    status: 'PUBLISHED',
+    level: 'ADVANCED',
+    language: 'English',
+    categoryId: 'cat-4',
+    categoryName: 'Cloud & DevOps',
+    subcategory: 'Docker & Kubernetes',
+    tags: ['DevOps', 'AWS', 'Kubernetes', 'Docker', 'CI/CD'],
+    instructorId: 'user-2',
+    instructorName: 'Dr. Rahul Verma',
+    instructorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80',
+    instructorTitle: 'Principal Cloud Architect',
+    rating: 4.88,
+    reviewCount: 940,
+    studentCount: 11200,
+    whatYouWillLearn: [
+      'Design fault-tolerant multi-region VPC architectures on AWS',
+      'Containerize fullstack applications with multi-stage Dockerfiles',
+      'Deploy and scale Kubernetes deployments with Helm charts',
+      'Automate continuous deployment with GitHub Actions & ArgoCD'
+    ],
+    prerequisites: ['Basic Linux command line knowledge'],
+    sections: [
+      {
+        id: 'sec-51',
+        title: 'Section 1: Containerization Fundamentals',
+        order: 1,
+        lessons: [
+          {
+            id: 'les-51',
+            title: '1. Docker Architecture & Container Lifecycle',
+            order: 1,
+            contentType: 'VIDEO',
+            durationSeconds: 850,
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+            isFreePreview: true
+          }
+        ]
+      }
+    ],
+    updatedAt: '2026-02-20'
+  },
+  {
+    id: 'course-6',
+    title: 'Cybersecurity & Ethical Hacking Defense 2026',
+    slug: 'cybersecurity-ethical-hacking-defense',
+    subtitle: 'Learn penetration testing, network defense, threat modeling, and web application security auditing.',
+    description: 'Comprehensive cybersecurity training covering OWASP Top 10 vulnerabilities, Kali Linux security tools, packet analysis with Wireshark, cryptography, and real-world ethical penetration testing.',
+    thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+    previewVideoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    price: 3299,
+    discountPrice: 649,
+    status: 'PUBLISHED',
+    level: 'BEGINNER',
+    language: 'English',
+    categoryId: 'cat-1',
+    categoryName: 'Web Development',
+    subcategory: 'Full Stack',
+    tags: ['Security', 'Ethical Hacking', 'OWASP', 'Linux', 'Network'],
+    instructorId: 'user-2',
+    instructorName: 'Dr. Rahul Verma',
+    instructorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80',
+    instructorTitle: 'Certified Ethical Hacker (CEH)',
+    rating: 4.92,
+    reviewCount: 1680,
+    studentCount: 14750,
+    whatYouWillLearn: [
+      'Audit web applications for OWASP Top 10 vulnerabilities',
+      'Perform network reconnaissance and vulnerability scanning',
+      'Implement JWT, OAuth2, and zero-trust security architecture',
+      'Conduct authorized penetration testing and bug bounty reporting'
+    ],
+    prerequisites: ['Basic networking and HTTP protocol concepts'],
+    sections: [
+      {
+        id: 'sec-61',
+        title: 'Section 1: Security Fundamentals & Reconnaissance',
+        order: 1,
+        lessons: [
+          {
+            id: 'les-61',
+            title: '1. Web App Security Architecture & Attack Vectors',
+            order: 1,
+            contentType: 'VIDEO',
+            durationSeconds: 680,
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+            isFreePreview: true
+          }
+        ]
+      }
+    ],
+    updatedAt: '2026-02-22'
   }
 ];
 

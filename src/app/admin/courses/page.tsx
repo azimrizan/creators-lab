@@ -19,7 +19,7 @@ export default function AdminCoursesPage() {
   const [categoryName, setCategoryName] = useState('Web Development');
   const [level, setLevel] = useState<'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'ALL_LEVELS'>('BEGINNER');
   const [instructorId, setInstructorId] = useState('');
-  const [thumbnail, setThumbnail] = useState('https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=800&q=80');
+  const [thumbnail, setThumbnail] = useState('https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80');
 
   // Media Lesson State
   const [sectionTitle, setSectionTitle] = useState('Section 1: Core Fundamentals');
