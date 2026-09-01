@@ -129,7 +129,7 @@ export default function HomePage() {
           {/* Category Dropdown Indicator / Brand Header */}
           <div className="flex items-center gap-3">
             <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-wide">
-              Movies
+              Course Catalog
             </h1>
             <div className="bg-black/60 border border-white/20 text-white text-xs font-semibold px-2.5 py-1 rounded flex items-center gap-2 cursor-pointer">
               <span>Genres</span>
@@ -181,7 +181,7 @@ export default function HomePage() {
         {/* Top 10 Ranked Row */}
         <section className="space-y-3 relative group/row">
           <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
-            Top 10 Movies in India Today
+            Top 10 Courses in India Today
           </h2>
 
           <div className="relative">
