@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User, Course, Order, Certificate, UserRole } from './types';
+import { User, Course, Order, Certificate, UserRole, getSafeThumbnail } from './types';
 import { MOCK_COURSES, MOCK_ORDERS, MOCK_CERTIFICATES } from './mockData';
 
 interface ProgressMap {
@@ -76,11 +76,9 @@ export const useAppStore = create<AppStore>()(
           const res = await fetch('/api/courses');
           const data = await res.json();
           if (data.success && data.data && data.data.length > 0) {
-            const OLD_REACT_IMG = '1633356122544-f134324a6cee';
-            const NEW_CODE_IMG = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80';
             const sanitized = data.data.map((c: Course) => ({
               ...c,
-              thumbnail: (!c.thumbnail || c.thumbnail.includes(OLD_REACT_IMG)) ? NEW_CODE_IMG : c.thumbnail
+              thumbnail: getSafeThumbnail(c.thumbnail, c.title, c.categoryName)
             }));
             set({ courses: sanitized });
           }
@@ -314,7 +312,7 @@ export const useAppStore = create<AppStore>()(
       }
     }),
     {
-      name: 'lms-app-store-v5'
+      name: 'lms-app-store-v6'
     }
   )
 );

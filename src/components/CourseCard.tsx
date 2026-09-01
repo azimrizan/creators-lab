@@ -39,7 +39,7 @@ export default function CourseCard({ course }: CourseCardProps) {
   };
 
   const firstLesson = course.sections[0]?.lessons[0];
-  const displayThumbnail = getSafeThumbnail(course.thumbnail);
+  const displayThumbnail = getSafeThumbnail(course.thumbnail, course.title, course.categoryName);
 
   return (
     <>

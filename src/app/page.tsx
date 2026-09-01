@@ -50,10 +50,50 @@ export default function HomePage() {
 
   const trendingCourses = courses.slice().sort((a, b) => b.studentCount - a.studentCount);
   const topRatedCourses = courses.slice().sort((a, b) => b.rating - a.rating);
-  const webDevCourses = courses.filter(c => c.categoryName?.toLowerCase().includes('web') || c.categoryName?.toLowerCase().includes('react') || c.tags?.some(t => t.toLowerCase().includes('security')));
-  const aiCourses = courses.filter(c => c.categoryName?.toLowerCase().includes('python') || c.categoryName?.toLowerCase().includes('data') || c.tags?.some(t => t.toLowerCase().includes('ai')));
-  const designCourses = courses.filter(c => c.categoryName?.toLowerCase().includes('design') || c.tags?.some(t => t.toLowerCase().includes('storytelling') || t.toLowerCase().includes('figma')));
-  const devopsCourses = courses.filter(c => c.categoryName?.toLowerCase().includes('cloud') || c.categoryName?.toLowerCase().includes('devops'));
+
+  const webDevCourses = courses.filter(c => {
+    const cat = (c.categoryName || '').toLowerCase();
+    const title = (c.title || '').toLowerCase();
+    return (cat.includes('web') || title.includes('next') || title.includes('react') || title.includes('full-stack') || cat.includes('full stack')) && !cat.includes('python') && !title.includes('python');
+  });
+
+  const aiCourses = courses.filter(c => {
+    const cat = (c.categoryName || '').toLowerCase();
+    const title = (c.title || '').toLowerCase();
+    const tags = (c.tags || []).map(t => t.toLowerCase());
+    return (
+      cat.includes('python') ||
+      cat.includes('data') ||
+      title.includes(' ai') ||
+      title.includes('deep learning') ||
+      title.includes('llm') ||
+      title.includes('machine learning') ||
+      tags.includes('ai') ||
+      tags.includes('machine learning') ||
+      tags.includes('pytorch')
+    );
+  });
+
+  const designCourses = courses.filter(c => {
+    const cat = (c.categoryName || '').toLowerCase();
+    const title = (c.title || '').toLowerCase();
+    return (
+      cat.includes('design') ||
+      cat.includes('ui') ||
+      cat.includes('arts') ||
+      title.includes('figma') ||
+      title.includes('storytelling') ||
+      title.includes('cinema') ||
+      title.includes('dance') ||
+      title.includes('design')
+    );
+  });
+
+  const devopsCourses = courses.filter(c => {
+    const cat = (c.categoryName || '').toLowerCase();
+    const title = (c.title || '').toLowerCase();
+    return cat.includes('cloud') || cat.includes('devops') || title.includes('kubernetes') || title.includes('docker') || title.includes('aws');
+  });
 
   // Horizontal Scroll Controls
   const scrollRow = (rowId: string, direction: 'left' | 'right') => {

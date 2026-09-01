@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Course from '@/models/Course';
+import { MOCK_COURSES } from '@/lib/mockData';
+import { getSafeThumbnail } from '@/lib/types';
 
 export async function GET(request: Request) {
   try {
@@ -17,25 +19,24 @@ export async function GET(request: Request) {
       filter.title = { $regex: search, $options: 'i' };
     }
 
-    const OLD_REACT_IMG = '1633356122544-f134324a6cee';
-    const NEW_CODE_IMG = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80';
-
-    // Auto-migrate any stale React thumbnails stored in MongoDB
-    Course.updateMany(
-      { thumbnail: { $regex: OLD_REACT_IMG } },
-      { $set: { thumbnail: NEW_CODE_IMG } }
-    ).catch(() => {});
+    // If MongoDB has fewer courses than the mock catalog, ensure all mock courses exist
+    const count = await Course.countDocuments({});
+    if (count < MOCK_COURSES.length) {
+      for (const mockCourse of MOCK_COURSES) {
+        const exists = await Course.findOne({ slug: mockCourse.slug });
+        if (!exists) {
+          await Course.create(mockCourse).catch(() => {});
+        }
+      }
+    }
 
     const rawCourses = await Course.find(filter).sort({ createdAt: -1 });
 
-    // Normalize courses so every document has a guaranteed non-empty id string and clean thumbnail
+    // Normalize courses so every document has a guaranteed non-empty id string and distinct category thumbnail
     const normalizedCourses = rawCourses.map(doc => {
       const obj = doc.toObject();
       const courseId = obj.id || obj._id.toString();
-      let thumbnail = obj.thumbnail;
-      if (!thumbnail || thumbnail.includes(OLD_REACT_IMG)) {
-        thumbnail = NEW_CODE_IMG;
-      }
+      const thumbnail = getSafeThumbnail(obj.thumbnail, obj.title, obj.categoryName);
       return { ...obj, id: courseId, _id: courseId, thumbnail };
     });
 
