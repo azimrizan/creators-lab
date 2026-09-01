@@ -164,7 +164,7 @@ export default function WatchLessonPage() {
             {currentLesson.contentType === 'VIDEO' && (
               <video
                 ref={videoRef}
-                src={currentLesson.videoUrl || course.previewVideoUrl}
+                src={currentLesson.videoUrl || course.previewVideoUrl || '/vidssave.com Visual Storytelling 101 480P.mp4'}
                 controls
                 autoPlay
                 onTimeUpdate={handleTimeUpdate}

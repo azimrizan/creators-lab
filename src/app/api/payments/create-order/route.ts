@@ -66,14 +66,6 @@ export async function POST(request: Request) {
 
     const targetCourseId = course._id.toString();
 
-    // Check if user is already enrolled
-    if (userId !== 'guest') {
-      const dbUser = await User.findById(userId);
-      if (dbUser && dbUser.enrolledCourseIds.includes(targetCourseId)) {
-        return NextResponse.json({ success: false, error: 'You are already enrolled in this course' }, { status: 400 });
-      }
-    }
-
     const rawPrice = course.discountPrice || course.price;
     const discountAmount = (couponCode === 'WELCOME20' || couponCode === 'PROMO20') ? rawPrice * 0.2 : 0;
     const subtotal = rawPrice - discountAmount;

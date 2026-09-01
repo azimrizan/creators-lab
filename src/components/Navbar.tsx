@@ -262,7 +262,7 @@ export default function Navbar() {
                         onClick={handleSignOut}
                         className="w-full text-center px-3 py-2 text-slate-300 hover:underline hover:bg-white/10 transition font-semibold"
                       >
-                        Sign out of Netflix
+                        Sign out
                       </button>
                     </div>
                   </div>

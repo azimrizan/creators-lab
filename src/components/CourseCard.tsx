@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Star, Users, Heart, ShoppingBag, Check, Play, Info } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Star, Heart, ShoppingBag, Check, Play } from 'lucide-react';
 import { Course, getSafeThumbnail } from '@/lib/types';
 import { useAppStore } from '@/lib/store';
 import AuthModal from './AuthModal';
@@ -12,6 +13,7 @@ interface CourseCardProps {
 }
 
 export default function CourseCard({ course }: CourseCardProps) {
+  const router = useRouter();
   const { currentUser, wishlistCourseIds, toggleWishlist, cartCourseIds, addToCart } = useAppStore();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
@@ -27,7 +29,17 @@ export default function CourseCard({ course }: CourseCardProps) {
     )
   );
 
+  const firstLesson = course.sections?.[0]?.lessons?.[0];
+  const targetUrl = isEnrolled
+    ? `/watch/${course.slug}/${firstLesson?.id || 'les-1'}`
+    : `/course/${course.slug}`;
+
+  const handleCardClick = () => {
+    router.push(targetUrl);
+  };
+
   const handleCartClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     e.preventDefault();
     if (currentUser.id === 'guest') {
       setIsAuthOpen(true);
@@ -38,12 +50,26 @@ export default function CourseCard({ course }: CourseCardProps) {
     }
   };
 
-  const firstLesson = course.sections[0]?.lessons[0];
+  const handleWishlistClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (currentUser.id === 'guest') {
+      setIsAuthOpen(true);
+      return;
+    }
+    if (courseId) {
+      toggleWishlist(courseId);
+    }
+  };
+
   const displayThumbnail = getSafeThumbnail(course.thumbnail, course.title, course.categoryName);
 
   return (
     <>
-      <div className="group relative bg-[#141414] rounded-md overflow-hidden transition-all duration-300 transform hover:scale-110 hover:z-50 hover:shadow-[0_10px_30px_rgba(0,0,0,0.9)] flex flex-col border border-white/5">
+      <div 
+        onClick={handleCardClick}
+        className="group relative bg-[#141414] rounded-md overflow-hidden transition-all duration-300 transform hover:scale-110 hover:z-50 hover:shadow-[0_10px_30px_rgba(0,0,0,0.9)] flex flex-col border border-white/5 cursor-pointer"
+      >
         {/* Poster Thumbnail */}
         <div className="relative aspect-video overflow-hidden bg-black">
           <img
@@ -83,35 +109,15 @@ export default function CourseCard({ course }: CourseCardProps) {
           {/* Action Row */}
           <div className="flex items-center justify-between pt-2 border-t border-white/10">
             <div className="flex items-center gap-2">
-              {isEnrolled ? (
-                <Link
-                  href={`/watch/${course.slug}/${firstLesson?.id || 'les-1'}`}
-                  className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-slate-200 transition"
-                  title="Play / Watch Now"
-                >
-                  <Play className="w-4 h-4 fill-current translate-x-0.5" />
-                </Link>
-              ) : (
-                <Link
-                  href={`/course/${course.slug}`}
-                  className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-slate-200 transition"
-                  title="View Details"
-                >
-                  <Play className="w-4 h-4 fill-current translate-x-0.5" />
-                </Link>
-              )}
+              <div
+                className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-slate-200 transition shadow-md"
+                title={isEnrolled ? "Stream Masterclass" : "View Curriculum & Enroll"}
+              >
+                <Play className="w-4 h-4 fill-current translate-x-0.5" />
+              </div>
 
               <button
-                onClick={e => {
-                  e.preventDefault();
-                  if (currentUser.id === 'guest') {
-                    setIsAuthOpen(true);
-                    return;
-                  }
-                  if (courseId) {
-                    toggleWishlist(courseId);
-                  }
-                }}
+                onClick={handleWishlistClick}
                 className={`w-8 h-8 rounded-full border flex items-center justify-center transition ${
                   isWishlisted
                     ? 'bg-rose-500/20 border-rose-500 text-rose-400'
@@ -125,8 +131,9 @@ export default function CourseCard({ course }: CourseCardProps) {
 
             {/* Cart / Play Button */}
             {isEnrolled ? (
-              <span className="text-[10px] bg-emerald-500/20 text-emerald-400 font-bold px-2 py-1 rounded border border-emerald-500/30">
-                Enrolled
+              <span className="text-[10px] bg-emerald-500/20 text-emerald-400 font-bold px-2.5 py-1 rounded border border-emerald-500/30 hover:bg-emerald-500/30 transition flex items-center gap-1">
+                <span>Enrolled</span>
+                <span className="text-xs">▶</span>
               </span>
             ) : (
               <button
@@ -135,7 +142,7 @@ export default function CourseCard({ course }: CourseCardProps) {
                 className={`p-1.5 px-3 rounded text-xs font-semibold flex items-center gap-1.5 transition ${
                   isInCart
                     ? 'bg-[#E50914]/20 border border-[#E50914]/40 text-red-300'
-                    : 'bg-[#E50914] hover:bg-[#b80710] text-white'
+                    : 'bg-[#E50914] hover:bg-[#b80710] text-white shadow-md'
                 }`}
               >
                 {isInCart ? (

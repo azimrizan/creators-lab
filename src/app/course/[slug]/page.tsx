@@ -294,7 +294,11 @@ export default function CourseDetailsPage() {
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
         course={course}
-        onSuccess={() => router.push(`/watch/${course.slug}/${course.sections[0]?.lessons[0]?.id || 'les-1'}`)}
+        onSuccess={(payId) => {
+          enrollUserInCourse(courseId, payId || `pay_${Date.now()}`, 'RAZORPAY');
+          const firstLessonId = course.sections[0]?.lessons[0]?.id || 'les-1';
+          router.push(`/watch/${course.slug}/${firstLessonId}`);
+        }}
       />
     </div>
   );

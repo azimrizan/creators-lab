@@ -60,7 +60,7 @@ export const MOCK_USERS: User[] = [
   {
     id: 'user-2',
     name: 'Philip Bloom',
-    email: 'philip@creatorslab.com',
+    email: 'instructor@creatorslab.com',
     role: 'INSTRUCTOR',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80',
     bio: 'World-renowned Director of Photography, Cinematographer & Pioneer of DSLR Filmmaking.',
@@ -139,7 +139,7 @@ export const MOCK_COURSES: Course[] = [
             order: 2,
             contentType: 'VIDEO',
             durationSeconds: 720,
-            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+            videoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
             isFreePreview: true
           },
           {
@@ -165,7 +165,7 @@ export const MOCK_COURSES: Course[] = [
             order: 1,
             contentType: 'VIDEO',
             durationSeconds: 910,
-            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+            videoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
             isFreePreview: false
           },
           {
@@ -216,7 +216,7 @@ export const MOCK_COURSES: Course[] = [
     subtitle: 'Learn node trees, ACES color management, 35mm film emulation, skin tone matching, and HDR mastering.',
     description: 'Transform raw footage into rich cinematic films. Learn ACES color management, node structure, curves, hue vs sat qualifiers, color balance, 35mm print film emulation (Kodak 2383), and high-dynamic-range delivery.',
     thumbnail: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80',
-    previewVideoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+    previewVideoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
     price: 3999,
     discountPrice: 799,
     status: 'PUBLISHED',
@@ -252,7 +252,7 @@ export const MOCK_COURSES: Course[] = [
             order: 1,
             contentType: 'VIDEO',
             durationSeconds: 840,
-            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+            videoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
             isFreePreview: true
           }
         ]
@@ -267,7 +267,7 @@ export const MOCK_COURSES: Course[] = [
     subtitle: 'Capture decisive moments, harness natural light, tell raw human stories, and master Lightroom color post-processing.',
     description: 'Elevate your photography portfolio. Learn how to work with natural street lighting, frame spontaneous moments, direct models in studio portraiture, and develop a signature Lightroom editing preset palette.',
     thumbnail: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80',
-    previewVideoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    previewVideoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
     price: 2999,
     discountPrice: 599,
     status: 'PUBLISHED',
@@ -303,7 +303,7 @@ export const MOCK_COURSES: Course[] = [
             order: 1,
             contentType: 'VIDEO',
             durationSeconds: 780,
-            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+            videoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
             isFreePreview: true
           }
         ]
@@ -318,7 +318,7 @@ export const MOCK_COURSES: Course[] = [
     subtitle: 'Create photorealistic 3D environments, procedural lighting, volumetric shaders, and cinematic camera animations.',
     description: 'Step into modern 3D world-building. Master Blender geometry nodes, PBR material texturing, volumetric fog, Unreal Engine 5 Lumen lighting, and Hollywood-grade virtual production cameras.',
     thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
-    previewVideoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    previewVideoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
     price: 3799,
     discountPrice: 749,
     status: 'PUBLISHED',
@@ -354,7 +354,7 @@ export const MOCK_COURSES: Course[] = [
             order: 1,
             contentType: 'VIDEO',
             durationSeconds: 920,
-            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+            videoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
             isFreePreview: true
           }
         ]
@@ -369,7 +369,7 @@ export const MOCK_COURSES: Course[] = [
     subtitle: 'Compose evocative orchestral themes, craft atmospheric foley, and engineer punchy immersive mixes in Ableton Live.',
     description: 'Learn the craft of modern cinematic sound. Discover how Hans Zimmer and Ludwig Göransson blend analog synthesizers with orchestral arrangements, sculpt deep sub-bass impacts, and mix audio for maximum emotional power.',
     thumbnail: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80',
-    previewVideoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    previewVideoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
     price: 3499,
     discountPrice: 699,
     status: 'PUBLISHED',
@@ -405,7 +405,7 @@ export const MOCK_COURSES: Course[] = [
             order: 1,
             contentType: 'VIDEO',
             durationSeconds: 860,
-            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+            videoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
             isFreePreview: true
           }
         ]
@@ -420,7 +420,7 @@ export const MOCK_COURSES: Course[] = [
     subtitle: 'Lead visual creative campaigns, build world-class brand identities, design systems, and aesthetic typography in Figma.',
     description: 'Master the high-level art of Creative Direction. Learn brand positioning, moodboarding, color psychology, layout typography grids, design tokens, and packaging presentation that wins client pitches.',
     thumbnail: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&w=800&q=80',
-    previewVideoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+    previewVideoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
     price: 2799,
     discountPrice: 549,
     status: 'PUBLISHED',
@@ -456,7 +456,7 @@ export const MOCK_COURSES: Course[] = [
             order: 1,
             contentType: 'VIDEO',
             durationSeconds: 750,
-            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+            videoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
             isFreePreview: true
           }
         ]
@@ -471,7 +471,7 @@ export const MOCK_COURSES: Course[] = [
     subtitle: 'Design seamless title sequences, kinetic typography, 3D brand stings, and high-energy commercial promo animations.',
     description: 'Bring static design to life. Learn kinetic speed graphs, 3D camera tracking, particle simulations, dynamic text reveals, and match-cuts for broadcast television and social media.',
     thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80',
-    previewVideoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+    previewVideoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
     price: 3199,
     discountPrice: 649,
     status: 'PUBLISHED',
@@ -507,7 +507,7 @@ export const MOCK_COURSES: Course[] = [
             order: 1,
             contentType: 'VIDEO',
             durationSeconds: 820,
-            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+            videoUrl: '/vidssave.com Visual Storytelling 101 480P.mp4',
             isFreePreview: true
           }
         ]
