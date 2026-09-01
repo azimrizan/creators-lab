@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Play, Award, CheckCircle2, BookOpen, Clock, Sparkles } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
+import { getSafeThumbnail } from '@/lib/types';
 
 export default function MyLearningPage() {
   const { courses, currentUser, userProgress } = useAppStore();
@@ -58,7 +59,7 @@ export default function MyLearningPage() {
                 <div key={itemKey} className="bg-[#141414] border border-white/10 rounded-xl overflow-hidden flex flex-col justify-between p-5 space-y-4 shadow-xl">
                   <div className="space-y-3">
                     <div className="relative aspect-video rounded-lg overflow-hidden bg-black">
-                      <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
+                      <img src={getSafeThumbnail(course.thumbnail)} alt={course.title} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                         <Link
                           href={`/watch/${course.slug}/${firstLesson?.id || 'les-1'}`}

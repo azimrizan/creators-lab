@@ -76,7 +76,13 @@ export const useAppStore = create<AppStore>()(
           const res = await fetch('/api/courses');
           const data = await res.json();
           if (data.success && data.data && data.data.length > 0) {
-            set({ courses: data.data });
+            const OLD_REACT_IMG = '1633356122544-f134324a6cee';
+            const NEW_CODE_IMG = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80';
+            const sanitized = data.data.map((c: Course) => ({
+              ...c,
+              thumbnail: (!c.thumbnail || c.thumbnail.includes(OLD_REACT_IMG)) ? NEW_CODE_IMG : c.thumbnail
+            }));
+            set({ courses: sanitized });
           }
         } catch (e) {
           // fallback to initial state

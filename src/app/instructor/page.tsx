@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { PlusCircle, BookOpen, Users, DollarSign, Video, FileText, CheckCircle2, TrendingUp, X } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
-import { Course } from '@/lib/types';
+import { Course, getSafeThumbnail } from '@/lib/types';
 
 export default function InstructorPage() {
   const { currentUser, courses, addCourse } = useAppStore();
@@ -126,7 +126,7 @@ export default function InstructorPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {myCourses.map((course, idx) => (
                 <div key={course.id || (course as any)._id || `instructor-course-${idx}`} className="bg-[#141414] border border-white/10 rounded-xl p-5 flex gap-4 shadow-xl">
-                  <img src={course.thumbnail} alt={course.title} className="w-28 h-20 object-cover rounded-md flex-shrink-0" />
+                  <img src={getSafeThumbnail(course.thumbnail)} alt={course.title} className="w-28 h-20 object-cover rounded-md flex-shrink-0" />
                   <div className="space-y-2 min-w-0 flex-1">
                     <h3 className="font-bold text-white text-sm truncate">{course.title}</h3>
                     <p className="text-xs text-[#B3B3B3] line-clamp-1">{course.subtitle}</p>

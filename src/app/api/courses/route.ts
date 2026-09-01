@@ -17,13 +17,26 @@ export async function GET(request: Request) {
       filter.title = { $regex: search, $options: 'i' };
     }
 
+    const OLD_REACT_IMG = '1633356122544-f134324a6cee';
+    const NEW_CODE_IMG = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80';
+
+    // Auto-migrate any stale React thumbnails stored in MongoDB
+    Course.updateMany(
+      { thumbnail: { $regex: OLD_REACT_IMG } },
+      { $set: { thumbnail: NEW_CODE_IMG } }
+    ).catch(() => {});
+
     const rawCourses = await Course.find(filter).sort({ createdAt: -1 });
 
-    // Normalize courses so every document has a guaranteed non-empty id string
+    // Normalize courses so every document has a guaranteed non-empty id string and clean thumbnail
     const normalizedCourses = rawCourses.map(doc => {
       const obj = doc.toObject();
       const courseId = obj.id || obj._id.toString();
-      return { ...obj, id: courseId, _id: courseId };
+      let thumbnail = obj.thumbnail;
+      if (!thumbnail || thumbnail.includes(OLD_REACT_IMG)) {
+        thumbnail = NEW_CODE_IMG;
+      }
+      return { ...obj, id: courseId, _id: courseId, thumbnail };
     });
 
     return NextResponse.json({ success: true, count: normalizedCourses.length, data: normalizedCourses });

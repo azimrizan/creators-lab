@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Star, Users, Heart, ShoppingBag, Check, Play, Info } from 'lucide-react';
-import { Course } from '@/lib/types';
+import { Course, getSafeThumbnail } from '@/lib/types';
 import { useAppStore } from '@/lib/store';
 import AuthModal from './AuthModal';
 
@@ -39,6 +39,7 @@ export default function CourseCard({ course }: CourseCardProps) {
   };
 
   const firstLesson = course.sections[0]?.lessons[0];
+  const displayThumbnail = getSafeThumbnail(course.thumbnail);
 
   return (
     <>
@@ -46,7 +47,7 @@ export default function CourseCard({ course }: CourseCardProps) {
         {/* Poster Thumbnail */}
         <div className="relative aspect-video overflow-hidden bg-black">
           <img
-            src={course.thumbnail}
+            src={displayThumbnail}
             alt={course.title}
             className="w-full h-full object-cover group-hover:opacity-90 transition-opacity"
           />

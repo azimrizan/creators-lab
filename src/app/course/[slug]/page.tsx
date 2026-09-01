@@ -47,6 +47,12 @@ export default function CourseDetailsPage() {
     }
   };
 
+  const OLD_REACT_IMG = '1633356122544-f134324a6cee';
+  const NEW_CODE_IMG = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80';
+  const displayThumbnail = (!course.thumbnail || course.thumbnail.includes(OLD_REACT_IMG))
+    ? NEW_CODE_IMG
+    : course.thumbnail;
+
   return (
     <div className="bg-[#0B0B0B] text-white min-h-screen pb-24">
       {/* Cinematic Hero Header */}
@@ -54,7 +60,7 @@ export default function CourseDetailsPage() {
         {/* Background Image / Backdrop */}
         <div className="absolute inset-0 z-0">
           <img
-            src={course.thumbnail}
+            src={displayThumbnail}
             alt={course.title}
             className="w-full h-full object-cover filter brightness-50"
           />
@@ -200,7 +206,7 @@ export default function CourseDetailsPage() {
         <div className="bg-[#141414] border border-white/10 p-6 rounded-xl space-y-6 sticky top-24 shadow-2xl">
           {/* Card Media Preview */}
           <div className="relative aspect-video rounded-lg overflow-hidden bg-black group">
-            <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
+            <img src={displayThumbnail} alt={course.title} className="w-full h-full object-cover" />
             <button
               onClick={() => setPreviewVideoUrl(course.previewVideoUrl)}
               className="absolute inset-0 bg-black/50 flex items-center justify-center group-hover:bg-black/40 transition"

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { X, Trash2, ShoppingBag, ArrowRight, Tag, Lock, Check } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
+import { getSafeThumbnail } from '@/lib/types';
 import AuthModal from './AuthModal';
 import RazorpayModal from './RazorpayModal';
 
@@ -114,7 +115,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       className="bg-[#1C1C1C] border border-white/10 rounded-xl p-3.5 flex gap-3 group"
                     >
                       <img
-                        src={course.thumbnail}
+                        src={getSafeThumbnail(course.thumbnail)}
                         alt={course.title}
                         className="w-20 h-16 object-cover rounded-md flex-shrink-0"
                       />

@@ -163,3 +163,13 @@ export interface SystemSettings {
   maxLoginAttempts: number;
   require2FAForAdmin: boolean;
 }
+
+export const DEFAULT_COURSE_THUMBNAIL = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80';
+export const STALE_REACT_IMAGE_ID = '1633356122544-f134324a6cee';
+
+export function getSafeThumbnail(thumbnail?: string): string {
+  if (!thumbnail || thumbnail.includes(STALE_REACT_IMAGE_ID)) {
+    return DEFAULT_COURSE_THUMBNAIL;
+  }
+  return thumbnail;
+}

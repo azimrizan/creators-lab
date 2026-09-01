@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Plus, Search, Edit3, Eye, Trash2, X, Upload, Video, FileText, CheckCircle2, Play } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
-import { Course, User } from '@/lib/types';
+import { Course, User, getSafeThumbnail } from '@/lib/types';
 
 export default function AdminCoursesPage() {
   const { courses, addCourse, updateCourseStatus } = useAppStore();
@@ -133,7 +133,7 @@ export default function AdminCoursesPage() {
                 return (
                   <tr key={cId || `adm-c-${idx}`} className="hover:bg-white/5 transition">
                     <td className="p-4 flex items-center gap-3">
-                      <img src={course.thumbnail} alt={course.title} className="w-12 h-9 object-cover rounded-md" />
+                      <img src={getSafeThumbnail(course.thumbnail)} alt={course.title} className="w-12 h-9 object-cover rounded-md" />
                       <div>
                         <div className="font-bold text-white max-w-xs truncate">{course.title}</div>
                         <div className="text-[11px] text-[#B3B3B3]">{course.categoryName}</div>
