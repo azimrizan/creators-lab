@@ -27,9 +27,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         userId: 'user-1',
         userName: 'Maya Sharma',
         courseId: 'course-1',
-        courseTitle: 'Full-Stack Next.js 14 & React Masterclass 2026',
+        courseTitle: 'Cinematic Visual Storytelling: Composition, Lenses & Framing',
         issueDate: '2026-02-05',
-        instructorName: 'Dr. Rahul Verma'
+        instructorName: 'Philip Bloom'
       }
     });
   }

@@ -19,16 +19,26 @@ export async function GET(request: Request) {
       filter.title = { $regex: search, $options: 'i' };
     }
 
-    // If MongoDB has fewer courses than the mock catalog, ensure all mock courses exist
-    const count = await Course.countDocuments({});
-    if (count < MOCK_COURSES.length) {
-      for (const mockCourse of MOCK_COURSES) {
-        const exists = await Course.findOne({ slug: mockCourse.slug });
-        if (!exists) {
-          await Course.create(mockCourse).catch(() => {});
-        }
-      }
+    // Sync all creative masterclasses to MongoDB Atlas
+    for (const mockCourse of MOCK_COURSES) {
+      await Course.findOneAndUpdate(
+        { slug: mockCourse.slug },
+        { $set: mockCourse },
+        { upsert: true }
+      ).catch(() => {});
     }
+
+    // Purge legacy coding courses if present
+    await Course.deleteMany({
+      slug: { 
+        $in: [
+          'full-stack-nextjs-react-masterclass', 
+          'python-ai-deep-learning-llms', 
+          'cloud-devops-masterclass-aws-docker-kubernetes', 
+          'cybersecurity-ethical-hacking-defense'
+        ] 
+      }
+    }).catch(() => {});
 
     const rawCourses = await Course.find(filter).sort({ createdAt: -1 });
 

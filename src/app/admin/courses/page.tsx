@@ -16,15 +16,15 @@ export default function AdminCoursesPage() {
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState(2999);
   const [discountPrice, setDiscountPrice] = useState(499);
-  const [categoryName, setCategoryName] = useState('Web Development');
+  const [categoryName, setCategoryName] = useState('Cinematography & Directing');
   const [level, setLevel] = useState<'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'ALL_LEVELS'>('BEGINNER');
   const [instructorId, setInstructorId] = useState('');
-  const [thumbnail, setThumbnail] = useState('https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80');
+  const [thumbnail, setThumbnail] = useState('https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=800&q=80');
 
   // Media Lesson State
   const [sectionTitle, setSectionTitle] = useState('Section 1: Core Fundamentals');
   const [lessonTitle, setLessonTitle] = useState('1. Introduction & Setup');
-  const [videoUrl, setVideoUrl] = useState('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4');
+  const [videoUrl, setVideoUrl] = useState('/vidssave.com Visual Storytelling 101 480P.mp4');
   const [pdfUrl, setPdfUrl] = useState('');
 
   // Fetch live instructors from MongoDB Atlas
@@ -225,10 +225,12 @@ export default function AdminCoursesPage() {
                     onChange={e => setCategoryName(e.target.value)}
                     className="w-full bg-[#0B0B0B] border border-white/15 rounded-md p-2.5 text-white focus:outline-none focus:border-[#E50914]"
                   >
-                    <option value="Web Development">Web Development</option>
-                    <option value="Python & Data Science">Python & Data Science</option>
-                    <option value="UI/UX & Product Design">UI/UX & Product Design</option>
-                    <option value="Cloud & DevOps">Cloud & DevOps</option>
+                    <option value="Cinematography & Directing">Cinematography & Directing</option>
+                    <option value="Photography & Visual Arts">Photography & Visual Arts</option>
+                    <option value="Video Editing & Color Grading">Video Editing & Color Grading</option>
+                    <option value="3D Animation & Motion Design">3D Animation & Motion Design</option>
+                    <option value="Music Production & Sound Engineering">Music Production & Sound Engineering</option>
+                    <option value="UI/UX & Brand Creative Direction">UI/UX & Brand Creative Direction</option>
                   </select>
                 </div>
               </div>

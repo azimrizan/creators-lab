@@ -4,6 +4,7 @@ import React, { useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Search, Filter, SlidersHorizontal, Star } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
+import { MOCK_CATEGORIES } from '@/lib/mockData';
 import CourseCard from '@/components/CourseCard';
 
 function CoursesContent() {
@@ -113,7 +114,7 @@ function CoursesContent() {
 
             {/* Category List */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Categories</label>
+              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Creative Disciplines</label>
               <div className="space-y-1 text-xs">
                 <button
                   onClick={() => setSelectedCategory('ALL')}
@@ -123,38 +124,21 @@ function CoursesContent() {
                       : 'text-slate-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  All Categories
+                  All Masterclasses
                 </button>
-                <button
-                  onClick={() => setSelectedCategory('cat-1')}
-                  className={`w-full text-left px-3 py-2 rounded-lg transition ${
-                    selectedCategory === 'cat-1' || selectedCategory === 'web-development'
-                      ? 'bg-[#E50914]/20 text-red-300 font-bold border border-[#E50914]/40'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  Web Development
-                </button>
-                <button
-                  onClick={() => setSelectedCategory('cat-2')}
-                  className={`w-full text-left px-3 py-2 rounded-lg transition ${
-                    selectedCategory === 'cat-2' || selectedCategory === 'python-data-science'
-                      ? 'bg-[#E50914]/20 text-red-300 font-bold border border-[#E50914]/40'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  Python & Data Science
-                </button>
-                <button
-                  onClick={() => setSelectedCategory('cat-3')}
-                  className={`w-full text-left px-3 py-2 rounded-lg transition ${
-                    selectedCategory === 'cat-3' || selectedCategory === 'ui-ux-design'
-                      ? 'bg-[#E50914]/20 text-red-300 font-bold border border-[#E50914]/40'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  UI/UX Product Design
-                </button>
+                {MOCK_CATEGORIES.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`w-full text-left px-3 py-2 rounded-lg transition truncate ${
+                      selectedCategory === cat.id || selectedCategory === cat.slug
+                        ? 'bg-[#E50914]/20 text-red-300 font-bold border border-[#E50914]/40'
+                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
               </div>
             </div>
 

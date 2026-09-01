@@ -37,12 +37,13 @@ export default function Footer() {
 
         {/* Col 2 */}
         <div className="space-y-3">
-          <h4 className="font-bold text-white uppercase text-[11px] tracking-wider">Top Categories</h4>
+          <h4 className="font-bold text-white uppercase text-[11px] tracking-wider">Creative Disciplines</h4>
           <ul className="space-y-2">
-            <li><Link href="/courses?category=web-development" className="hover:text-white transition">Web Development</Link></li>
-            <li><Link href="/courses?category=python-data-science" className="hover:text-white transition">Python & Data Science</Link></li>
-            <li><Link href="/courses?category=ui-ux-design" className="hover:text-white transition">UI/UX Product Design</Link></li>
-            <li><Link href="/courses?category=cloud-devops" className="hover:text-white transition">Cloud & DevOps</Link></li>
+            <li><Link href="/courses?category=cinematography-directing" className="hover:text-white transition">Cinematography & Directing</Link></li>
+            <li><Link href="/courses?category=photography-visual-arts" className="hover:text-white transition">Photography & Visual Arts</Link></li>
+            <li><Link href="/courses?category=video-editing-color-grading" className="hover:text-white transition">Video Editing & Color Grading</Link></li>
+            <li><Link href="/courses?category=motion-design-3d-vfx" className="hover:text-white transition">3D Animation & Motion Design</Link></li>
+            <li><Link href="/courses?category=music-production-audio" className="hover:text-white transition">Music Production & Sound</Link></li>
           </ul>
         </div>
 

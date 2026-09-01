@@ -23,7 +23,7 @@ export async function POST() {
     const initialUsers = [
       {
         name: 'Maya Sharma',
-        email: 'student@learnhub.com',
+        email: 'student@creatorslab.com',
         passwordHash: studentPasswordHash,
         role: 'STUDENT',
         avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=250&q=80',
@@ -32,19 +32,19 @@ export async function POST() {
         wishlistCourseIds: []
       },
       {
-        name: 'Dr. Rahul Verma',
-        email: 'instructor@learnhub.com',
+        name: 'Philip Bloom',
+        email: 'instructor@creatorslab.com',
         passwordHash: instructorPasswordHash,
         role: 'INSTRUCTOR',
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80',
-        bio: 'Senior Full Stack Engineer & Educator with 10+ years experience.',
+        bio: 'World-renowned Director of Photography, Cinematographer & Pioneer of DSLR Filmmaking.',
         isBlocked: false,
         enrolledCourseIds: [],
         wishlistCourseIds: []
       },
       {
         name: 'Super Admin',
-        email: 'admin@learnhub.com',
+        email: 'admin@creatorslab.com',
         passwordHash: adminPasswordHash,
         role: 'SUPER_ADMIN',
         avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=250&q=80',

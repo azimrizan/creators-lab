@@ -32,7 +32,7 @@ export default function PublicVerifyCertificatePage() {
           </div>
           <div className="flex justify-between border-b border-white/10 pb-2">
             <span className="text-[#B3B3B3]">Course Mastery</span>
-            <span className="font-bold text-white">Full-Stack Next.js 14 & React Masterclass</span>
+            <span className="font-bold text-white">Cinematic Visual Storytelling: Composition, Lenses & Framing</span>
           </div>
           <div className="flex justify-between border-b border-white/10 pb-2">
             <span className="text-[#B3B3B3]">Completion Status</span>
