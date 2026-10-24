@@ -18,7 +18,7 @@ export default function FormattedMarkdown({ content, className = '' }: Formatted
   const lines = content.split('\n');
 
   return (
-    <div className={`space-y-2 text-xs leading-relaxed text-slate-200 ${className}`}>
+    <div className={`space-y-2 text-xs leading-relaxed text-zinc-800 ${className}`}>
       {lines.map((line, lineIdx) => {
         const trimmed = line.trim();
         if (!trimmed) return <div key={lineIdx} className="h-1" />;
@@ -27,7 +27,7 @@ export default function FormattedMarkdown({ content, className = '' }: Formatted
         if (trimmed.startsWith('#')) {
           const headerText = trimmed.replace(/^#+\s*/, '');
           return (
-            <h4 key={lineIdx} className="font-extrabold text-white text-sm pt-1 pb-0.5 tracking-wide">
+            <h4 key={lineIdx} className="font-extrabold text-zinc-900 text-sm pt-1 pb-0.5 tracking-wide">
               {parseInlineFormatting(headerText)}
             </h4>
           );
@@ -38,7 +38,7 @@ export default function FormattedMarkdown({ content, className = '' }: Formatted
           const bulletText = trimmed.replace(/^[\*\-•]\s*/, '');
           return (
             <div key={lineIdx} className="flex items-start gap-2 pl-1">
-              <span className="text-amber-400 font-bold text-xs select-none">•</span>
+              <span className="text-[#d33028] font-bold text-xs select-none">•</span>
               <span className="flex-1">{parseInlineFormatting(bulletText)}</span>
             </div>
           );
@@ -62,7 +62,7 @@ function parseInlineFormatting(text: string): React.ReactNode {
   return parts.map((part, index) => {
     if (part.startsWith('**') && part.endsWith('**')) {
       return (
-        <strong key={index} className="font-bold text-white tracking-wide">
+        <strong key={index} className="font-bold text-zinc-900 tracking-wide">
           {part.slice(2, -2)}
         </strong>
       );
@@ -70,7 +70,7 @@ function parseInlineFormatting(text: string): React.ReactNode {
 
     if (part.startsWith('`') && part.endsWith('`')) {
       return (
-        <code key={index} className="bg-black/60 text-amber-300 font-mono text-[11px] px-1.5 py-0.5 rounded border border-white/10">
+        <code key={index} className="bg-zinc-100 text-[#d33028] font-mono text-[11px] px-1.5 py-0.5 rounded border border-zinc-200">
           {part.slice(1, -1)}
         </code>
       );
@@ -78,7 +78,7 @@ function parseInlineFormatting(text: string): React.ReactNode {
 
     if (/^\[\d{2}:\d{2}:\d{2}\]$/.test(part)) {
       return (
-        <span key={index} className="inline-flex items-center gap-1 font-mono text-[10px] bg-amber-500/15 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/30 mx-0.5">
+        <span key={index} className="inline-flex items-center gap-1 font-mono text-[10px] bg-[#d33028]/10 text-[#d33028] px-1.5 py-0.5 rounded border border-[#d33028]/30 mx-0.5 font-bold">
           {part.slice(1, -1)}
         </span>
       );

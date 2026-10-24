@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Play, CheckCircle2, FileText, HelpCircle, Download, Send, Clock, Award, ShieldCheck, ChevronRight, Sparkles, BookOpen } from 'lucide-react';
+import { ArrowLeft, Play, CheckCircle2, FileText, HelpCircle, Download, Send, Clock, Award, ShieldCheck, ChevronLeft, ChevronRight, Sparkles, BookOpen, MessageSquare } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { MOCK_QA } from '@/lib/mockData';
 import { QuizQuestion } from '@/lib/types';
@@ -35,14 +35,21 @@ export default function WatchLessonPage() {
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
 
-  // Right Column View ('curriculum' vs 'agent')
-  const [rightSidebarTab, setRightSidebarTab] = useState<'curriculum' | 'agent'>('curriculum');
+  // Right Column Active View ('curriculum' | 'overview' | 'discussion' | 'agent')
+  type ActiveSection = 'curriculum' | 'overview' | 'discussion' | 'agent';
+  const [activeSection, setActiveSection] = useState<ActiveSection>('curriculum');
   const [agentPanelMode, setAgentPanelMode] = useState<'chat' | 'quiz'>('chat');
   const [initialAgentPrompt, setInitialAgentPrompt] = useState<string | undefined>(undefined);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const progress = userProgress[courseId] || { completedLessonIds: [], lastPositionSec: {} };
   const isCompleted = progress.completedLessonIds.includes(currentLesson.id);
+
+  const currentIndex = allLessons.findIndex(l => l.id === currentLesson.id);
+  const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
+  const nextLesson = currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
+  const completedCount = progress.completedLessonIds.length;
+  const progressPercent = allLessons.length > 0 ? Math.round((completedCount / allLessons.length) * 100) : 0;
 
   // Auto-resume watch position
   useEffect(() => {
@@ -68,22 +75,22 @@ export default function WatchLessonPage() {
   const handleVideoEnded = () => {
     markLessonComplete(courseId, currentLesson.id);
     setAgentPanelMode('quiz');
-    setRightSidebarTab('agent');
+    setActiveSection('agent');
   };
 
   const handleOpenAgentChat = (prompt?: string) => {
     if (prompt) setInitialAgentPrompt(prompt);
     setAgentPanelMode('chat');
-    setRightSidebarTab('agent');
+    setActiveSection('agent');
   };
 
   const handleOpenAgentQuiz = () => {
     setAgentPanelMode('quiz');
-    setRightSidebarTab('agent');
+    setActiveSection('agent');
   };
 
   const handleCloseAgentPanel = () => {
-    setRightSidebarTab('curriculum');
+    setActiveSection('curriculum');
   };
 
   const handlePostQuestion = (e: React.FormEvent) => {
@@ -114,39 +121,83 @@ export default function WatchLessonPage() {
   };
 
   return (
-    <div className="h-screen max-h-screen bg-[#0B0B0B] text-white flex flex-col pt-16 font-sans overflow-hidden">
-      {/* Top Navigation Bar */}
-      <header className="h-14 bg-[#141414] border-b border-white/10 px-4 sm:px-6 flex items-center justify-between text-xs z-20 shrink-0">
-        <div className="flex items-center gap-3">
-          <Link href={`/course/${course.slug}`} className="p-1.5 rounded-md text-[#B3B3B3] hover:text-white hover:bg-white/10 transition">
+    <div className="h-screen max-h-screen bg-white text-zinc-900 flex flex-col pt-16 sm:pt-20 font-sans overflow-hidden">
+      {/* Top Header / Player Controls */}
+      <header className="h-14 sm:h-16 bg-white border-b border-zinc-200 px-4 sm:px-6 flex items-center justify-between text-xs z-20 shrink-0 shadow-sm">
+        {/* Left: Back & Course Hierarchy */}
+        <div className="flex items-center gap-3 min-w-0">
+          <Link 
+            href={`/course/${course.slug}`} 
+            title="Back to Course Details"
+            className="p-2 rounded-full text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 transition shrink-0"
+          >
             <ArrowLeft className="w-4 h-4" />
           </Link>
-          <div className="truncate max-w-md">
-            <span className="font-bold text-white truncate">{course.title}</span>
-            <span className="text-slate-500 mx-2">•</span>
-            <span className="text-amber-400 font-medium">{currentLesson.title}</span>
+          <div className="truncate min-w-0 flex items-center gap-2">
+            <span className="font-bold text-zinc-900 truncate text-xs sm:text-sm">{course.title}</span>
+            <span className="text-zinc-300 hidden sm:inline">•</span>
+            <span className="text-[#d33028] font-semibold truncate hidden md:inline">{currentLesson.title}</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Right: Lesson Navigation, AI Agent Toggle, Mark Complete */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* Prev / Next Lesson Navigation */}
+          <div className="hidden sm:flex items-center border border-zinc-200 rounded-lg overflow-hidden bg-zinc-50 shadow-sm">
+            {prevLesson ? (
+              <Link
+                href={`/watch/${course.slug}/${prevLesson.id}`}
+                className="px-2.5 py-1.5 hover:bg-zinc-100 text-zinc-700 flex items-center gap-1 transition text-[11px] font-medium border-r border-zinc-200"
+                title={`Previous: ${prevLesson.title}`}
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span className="hidden md:inline">Prev</span>
+              </Link>
+            ) : (
+              <span className="px-2.5 py-1.5 text-zinc-300 flex items-center gap-1 text-[11px] font-medium border-r border-zinc-200 cursor-not-allowed">
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span className="hidden md:inline">Prev</span>
+              </span>
+            )}
+
+            {nextLesson ? (
+              <Link
+                href={`/watch/${course.slug}/${nextLesson.id}`}
+                className="px-2.5 py-1.5 hover:bg-zinc-100 text-zinc-700 flex items-center gap-1 transition text-[11px] font-medium"
+                title={`Next: ${nextLesson.title}`}
+              >
+                <span className="hidden md:inline">Next</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+            ) : (
+              <span className="px-2.5 py-1.5 text-zinc-300 flex items-center gap-1 text-[11px] font-medium cursor-not-allowed">
+                <span className="hidden md:inline">Next</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </span>
+            )}
+          </div>
+
+          {/* Ask AI Agent Button */}
           <button
             onClick={() => handleOpenAgentChat()}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-2 border ${
-              rightSidebarTab === 'agent'
-                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-sm'
-                : 'bg-[#1F1F1F] hover:bg-[#2A2A2A] border-white/15 text-white'
+            className={`px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-2 border shadow-sm ${
+              activeSection === 'agent'
+                ? 'bg-[#d33028] text-white border-[#d33028]'
+                : 'bg-white hover:bg-zinc-50 border-zinc-300 text-zinc-800'
             }`}
           >
-            <img src="/IMG_2796.PNG" alt="AI Agent" className="w-5 h-5 object-contain" />
-            <span>Ask AI Agent</span>
+            <img src="/IMG_2796.PNG" alt="AI Agent" className="w-4 h-4 sm:w-5 sm:h-5 object-contain" />
+            <span className="hidden sm:inline">Ask AI Agent</span>
+            <span className="sm:hidden">AI</span>
           </button>
 
+          {/* Mark Complete Button */}
           <button
             onClick={() => markLessonComplete(courseId, currentLesson.id)}
-            className={`px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition ${
+            className={`px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-sm ${
               isCompleted
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'bg-[#1C1C1C] border border-white/15 text-white hover:bg-white/10'
+                ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                : 'bg-[#d33028] text-white hover:bg-[#b82720]'
             }`}
           >
             <CheckCircle2 className="w-4 h-4" />
@@ -158,9 +209,9 @@ export default function WatchLessonPage() {
       {/* Main Integrated Theater Grid */}
       <div className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden">
         {/* Left Column: Video Theater Player & Tabs */}
-        <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar">
+        <div className="flex-1 flex flex-col overflow-y-auto min-h-0 bg-zinc-50/50">
           {/* Theater Mode Video Container */}
-          <div className="relative aspect-video w-full bg-black flex items-center justify-center border-b border-white/10 shadow-2xl group">
+          <div className="relative aspect-video max-h-[62vh] w-full bg-black flex items-center justify-center border-b border-zinc-200 shadow-sm shrink-0">
             {currentLesson.contentType === 'VIDEO' && (
               <video
                 ref={videoRef}
@@ -174,17 +225,17 @@ export default function WatchLessonPage() {
             )}
 
             {currentLesson.contentType === 'PDF' && (
-              <div className="p-8 text-center space-y-4 max-w-md">
-                <div className="w-16 h-16 bg-sky-500/20 text-sky-400 rounded-full flex items-center justify-center mx-auto border border-sky-500/30">
+              <div className="p-8 text-center space-y-4 max-w-md bg-white rounded-xl border border-zinc-200 shadow-sm">
+                <div className="w-16 h-16 bg-sky-50 text-sky-600 rounded-full flex items-center justify-center mx-auto border border-sky-200">
                   <FileText className="w-8 h-8" />
                 </div>
-                <h3 className="text-lg font-bold text-white">{currentLesson.title}</h3>
-                <p className="text-xs text-[#B3B3B3]">PDF Resource & Architecture Guide</p>
+                <h3 className="text-lg font-bold text-zinc-900">{currentLesson.title}</h3>
+                <p className="text-xs text-zinc-500">PDF Resource & Architecture Guide</p>
                 <a
                   href={currentLesson.pdfUrl || '#'}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 bg-[#E50914] hover:bg-[#b80710] text-white font-bold text-xs px-5 py-2.5 rounded-md transition"
+                  className="inline-flex items-center gap-2 bg-[#d33028] hover:bg-[#b82720] text-white font-bold text-xs px-5 py-2.5 rounded-md transition"
                 >
                   <Download className="w-4 h-4" />
                   <span>Download PDF Document</span>
@@ -193,28 +244,28 @@ export default function WatchLessonPage() {
             )}
 
             {currentLesson.contentType === 'QUIZ' && currentLesson.quiz && (
-              <div className="p-8 max-w-xl w-full space-y-6 bg-[#141414] border border-white/10 rounded-xl my-4">
+              <div className="p-8 max-w-xl w-full space-y-6 bg-white border border-zinc-200 rounded-xl my-4 shadow-sm">
                 <div className="flex items-center gap-3">
-                  <HelpCircle className="w-6 h-6 text-amber-400" />
+                  <HelpCircle className="w-6 h-6 text-amber-500" />
                   <div>
-                    <h3 className="text-base font-bold text-white">{currentLesson.quiz.title}</h3>
-                    <p className="text-xs text-[#B3B3B3]">Passing Score: {currentLesson.quiz.passingScorePercent}%</p>
+                    <h3 className="text-base font-bold text-zinc-900">{currentLesson.quiz.title}</h3>
+                    <p className="text-xs text-zinc-500">Passing Score: {currentLesson.quiz.passingScorePercent}%</p>
                   </div>
                 </div>
 
                 <div className="space-y-4 text-xs">
                   {currentLesson.quiz.questions.map((q: QuizQuestion, qIdx: number) => (
-                    <div key={q.id} className="space-y-2 p-3 bg-[#0B0B0B] border border-white/10 rounded-md">
-                      <p className="font-semibold text-white">{qIdx + 1}. {q.question}</p>
+                    <div key={q.id} className="space-y-2 p-3 bg-zinc-50 border border-zinc-200 rounded-md">
+                      <p className="font-semibold text-zinc-900">{qIdx + 1}. {q.question}</p>
                       <div className="space-y-1 pl-2">
                         {q.options.map((opt: string, optIdx: number) => (
-                          <label key={optIdx} className="flex items-center gap-2 text-[#B3B3B3] hover:text-white cursor-pointer py-1">
+                          <label key={optIdx} className="flex items-center gap-2 text-zinc-700 hover:text-zinc-900 cursor-pointer py-1">
                             <input
                               type="radio"
                               name={`q-${q.id}`}
                               checked={quizAnswers[q.id] === optIdx}
                               onChange={() => setQuizAnswers(prev => ({ ...prev, [q.id]: optIdx }))}
-                              className="accent-[#E50914]"
+                              className="accent-[#d33028]"
                             />
                             <span>{opt}</span>
                           </label>
@@ -226,7 +277,7 @@ export default function WatchLessonPage() {
 
                 <button
                   onClick={handleQuizSubmit}
-                  className="w-full bg-[#E50914] hover:bg-[#b80710] text-white font-bold py-2.5 rounded-md transition text-xs"
+                  className="w-full bg-[#d33028] hover:bg-[#b82720] text-white font-bold py-2.5 rounded-md transition text-xs"
                 >
                   {quizSubmitted ? 'Assessment Submitted ✓' : 'Submit Quiz Answers'}
                 </button>
@@ -234,114 +285,136 @@ export default function WatchLessonPage() {
             )}
           </div>
 
-          {/* Navigation Tabs */}
-          <div className="bg-[#141414] border-b border-white/10 px-6 flex gap-6 text-xs font-semibold">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={`py-3.5 border-b-2 transition ${
-                activeTab === 'overview' ? 'border-emerald-400 text-white' : 'border-transparent text-[#B3B3B3] hover:text-white'
-              }`}
-            >
-              Overview & Resources
-            </button>
-            <button
-              onClick={() => setActiveTab('qa')}
-              className={`py-3.5 border-b-2 transition ${
-                activeTab === 'qa' ? 'border-emerald-400 text-white' : 'border-transparent text-[#B3B3B3] hover:text-white'
-              }`}
-            >
-              Lesson Q&A Discussion
-            </button>
-            <button
-              onClick={() => handleOpenAgentChat()}
-              className="py-3.5 border-b-2 border-transparent text-emerald-400 hover:text-emerald-300 transition flex items-center gap-2 font-bold"
-            >
-              <img src="/IMG_2796.PNG" alt="AI Agent" className="w-4 h-4 object-contain" />
-              <span>Learn with AI Agent</span>
-            </button>
+          {/* Attached Video Details & Description Section (Directly below video) */}
+          <div className="bg-white border-b border-zinc-200 px-4 sm:px-8 py-5 sm:py-6 space-y-3 shrink-0 shadow-xs">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="bg-[#d33028]/10 text-[#d33028] text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-[#d33028]/20 uppercase">
+                {currentSection?.title || 'Section'}
+              </span>
+              <span className="bg-zinc-100 text-zinc-600 text-[10px] font-semibold px-2 py-0.5 rounded">
+                {Math.round(currentLesson.durationSeconds / 60)} mins
+              </span>
+              {isCompleted && (
+                <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1 border border-emerald-200">
+                  <CheckCircle2 className="w-3 h-3" />
+                  Completed
+                </span>
+              )}
+            </div>
+
+            <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
+              {currentLesson.title}
+            </h1>
+
+            <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed max-w-4xl">
+              Master key creative and technical principles in {currentLesson.title}. Learn hands-on workflow best practices from industry educator {course.instructorName}.
+            </p>
           </div>
 
-          {/* Tab Body */}
-          <div className="p-6 max-w-[1400px] w-full space-y-6">
-            {activeTab === 'overview' && (
-              <div className="space-y-4 text-xs text-[#B3B3B3]">
-                <h3 className="text-base font-bold text-white">{currentLesson.title}</h3>
-                <p className="leading-relaxed">
-                  Welcome to {currentLesson.title}! Master composition techniques, Rule of Thirds, central framing, one-point perspective, and lens compression with acclaimed cinematographer Philip Bloom.
-                </p>
-                <div className="p-4 rounded-xl bg-[#141414] border border-white/10 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <img src="/IMG_2796.PNG" alt="AI Agent" className="w-8 h-8 object-contain" />
-                    <div>
-                      <h4 className="text-sm font-bold text-white">AI Agent Knowledge Assessment Ready</h4>
-                      <p className="text-[11px] text-slate-400">Finish the video to automatically trigger the 10-question MCQ assessment or ask doubts below.</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleOpenAgentQuiz()}
-                    className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-full text-xs transition"
-                  >
-                    Take Quiz Now
-                  </button>
-                </div>
-              </div>
-            )}
+          {/* All buttons in the left side bottom in a single row */}
+          <div className="border-t border-b border-zinc-200 px-4 sm:px-8 py-3.5 bg-zinc-50/80 flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
+            {/* Button 1: Course Curriculum */}
+            <button
+              onClick={() => setActiveSection('curriculum')}
+              className={`px-4 sm:px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 text-xs font-bold ${
+                activeSection === 'curriculum'
+                  ? 'bg-[#d33028] text-white shadow-sm ring-2 ring-[#d33028]/20'
+                  : 'bg-white hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 border border-zinc-200/90 shadow-2xs'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>Course Curriculum</span>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
+                activeSection === 'curriculum' ? 'bg-white/20 text-white' : 'bg-zinc-100 text-zinc-600 border border-zinc-200'
+              }`}>
+                {completedCount}/{allLessons.length}
+              </span>
+            </button>
 
-            {activeTab === 'qa' && (
-              <div className="space-y-6">
-                <form onSubmit={handlePostQuestion} className="space-y-2">
-                  <textarea
-                    rows={3}
-                    placeholder="Ask a technical question about this lesson..."
-                    value={newQuestionText}
-                    onChange={e => setNewQuestionText(e.target.value)}
-                    className="w-full bg-[#141414] border border-white/15 rounded-md p-3 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-400"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs px-4 py-2 rounded-md transition flex items-center gap-1.5"
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                    <span>Post Question</span>
-                  </button>
-                </form>
+            {/* Button 2: Overview & Notes */}
+            <button
+              onClick={() => setActiveSection('overview')}
+              className={`px-4 sm:px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 text-xs font-bold ${
+                activeSection === 'overview'
+                  ? 'bg-[#d33028] text-white shadow-sm ring-2 ring-[#d33028]/20'
+                  : 'bg-white hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 border border-zinc-200/90 shadow-2xs'
+              }`}
+            >
+              <FileText className="w-4 h-4" />
+              <span>Overview & Notes</span>
+            </button>
 
-                <div className="space-y-3">
-                  {qaList.map(qa => (
-                    <div key={qa.id} className="p-4 bg-[#141414] border border-white/10 rounded-md space-y-2 text-xs">
-                      <div className="flex items-center gap-2">
-                        <img src={qa.userAvatar} alt={qa.userName} className="w-6 h-6 rounded-full object-cover" />
-                        <span className="font-bold text-white">{qa.userName}</span>
-                        <span className="text-[10px] text-slate-500">• {qa.createdAt}</span>
-                      </div>
-                      <p className="text-[#B3B3B3] pl-8">{qa.question}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Button 3: Lesson Discussion */}
+            <button
+              onClick={() => setActiveSection('discussion')}
+              className={`px-4 sm:px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 text-xs font-bold ${
+                activeSection === 'discussion'
+                  ? 'bg-[#d33028] text-white shadow-sm ring-2 ring-[#d33028]/20'
+                  : 'bg-white hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 border border-zinc-200/90 shadow-2xs'
+              }`}
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span>Lesson Discussion</span>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
+                activeSection === 'discussion' ? 'bg-white/20 text-white' : 'bg-zinc-100 text-zinc-600 border border-zinc-200'
+              }`}>
+                {qaList.length}
+              </span>
+            </button>
+
+            {/* Button 4: AI Study Buddy */}
+            <button
+              onClick={() => handleOpenAgentChat()}
+              className={`px-4 sm:px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 text-xs font-bold ${
+                activeSection === 'agent'
+                  ? 'bg-[#d33028] text-white shadow-sm ring-2 ring-[#d33028]/20'
+                  : 'bg-white hover:bg-[#d33028]/10 text-zinc-700 hover:text-[#d33028] border border-zinc-200/90 shadow-2xs'
+              }`}
+            >
+              <img src="/IMG_2796.PNG" alt="AI Agent" className="w-4 h-4 object-contain" />
+              <span>AI Study Buddy</span>
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+            </button>
           </div>
         </div>
 
-        {/* Right Integrated Column: Enlarged Width (w-full lg:w-[480px] xl:w-[520px]) */}
-        <div className="w-full lg:w-[480px] xl:w-[520px] bg-[#141414] border-l border-white/10 flex flex-col flex-shrink-0 h-full min-h-0 overflow-hidden">
-          {/* Curriculum View */}
-          {rightSidebarTab === 'curriculum' ? (
+        {/* Right Integrated Column: Dynamic Content Panel (opens clicked section) */}
+        <div className="w-full lg:w-[420px] xl:w-[480px] bg-white border-l border-zinc-200 flex flex-col flex-shrink-0 h-full min-h-0 overflow-hidden shadow-sm">
+          {/* 1. Course Curriculum View */}
+          {activeSection === 'curriculum' && (
             <div className="flex-1 flex flex-col overflow-hidden">
-              <div className="p-4 border-b border-white/10 bg-[#1C1C1C]">
-                <h3 className="font-bold text-white text-xs uppercase tracking-wider">Course Curriculum</h3>
-                <p className="text-[11px] text-[#B3B3B3] mt-0.5">
-                  {progress.completedLessonIds.length} of {allLessons.length} Completed
+              {/* Header with Progress Bar */}
+              <div className="p-4 sm:p-5 border-b border-zinc-200 bg-zinc-50/80 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-zinc-900 text-xs uppercase tracking-wider flex items-center gap-2">
+                    <BookOpen className="w-4 h-4 text-[#d33028]" />
+                    <span>Course Curriculum</span>
+                  </h3>
+                  <span className="text-xs font-bold text-[#d33028]">{progressPercent}% Completed</span>
+                </div>
+                {/* Sleek Progress Bar */}
+                <div className="w-full bg-zinc-200 h-2 rounded-full overflow-hidden">
+                  <div
+                    className="bg-[#d33028] h-full transition-all duration-500 rounded-full"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+                <p className="text-[11px] text-zinc-500">
+                  {completedCount} of {allLessons.length} lessons completed
                 </p>
               </div>
 
-              <div className="flex-1 overflow-y-auto divide-y divide-white/10">
+              {/* Lesson Items */}
+              <div className="flex-1 overflow-y-auto divide-y divide-zinc-200">
                 {course.sections.map(section => (
-                  <div key={section.id} className="bg-[#141414]">
-                    <div className="p-3 bg-[#1C1C1C]/60 text-[11px] font-bold text-white">
-                      {section.title}
+                  <div key={section.id} className="bg-white">
+                    <div className="p-3 px-4 bg-zinc-100/60 text-xs font-bold text-zinc-800 flex items-center justify-between">
+                      <span className="truncate">{section.title}</span>
+                      <span className="text-[10px] text-zinc-500 shrink-0 font-normal">
+                        {section.lessons.length} {section.lessons.length === 1 ? 'lesson' : 'lessons'}
+                      </span>
                     </div>
-                    <div className="divide-y divide-white/5">
+                    <div className="divide-y divide-zinc-100">
                       {section.lessons.map(lesson => {
                         const isCurrent = lesson.id === currentLesson.id;
                         const isLessonDone = progress.completedLessonIds.includes(lesson.id);
@@ -350,21 +423,23 @@ export default function WatchLessonPage() {
                           <Link
                             key={lesson.id}
                             href={`/watch/${course.slug}/${lesson.id}`}
-                            className={`p-3.5 pl-4 flex items-center justify-between text-xs transition ${
+                            className={`p-3.5 px-4 flex items-center justify-between text-xs transition ${
                               isCurrent
-                                ? 'bg-emerald-500/20 text-white font-bold border-l-4 border-emerald-400'
-                                : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'
+                                ? 'bg-[#d33028]/10 text-[#d33028] font-bold border-l-4 border-[#d33028]'
+                                : 'text-zinc-700 hover:text-zinc-900 hover:bg-zinc-50'
                             }`}
                           >
-                            <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                            <div className="flex items-center gap-3 min-w-0 pr-2">
                               {isLessonDone ? (
-                                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                              ) : isCurrent ? (
+                                <Play className="w-4 h-4 text-[#d33028] fill-current flex-shrink-0" />
                               ) : (
-                                <Play className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                                <Play className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
                               )}
                               <span className="truncate">{lesson.title}</span>
                             </div>
-                            <span className="text-[10px] text-slate-500 flex-shrink-0">
+                            <span className="text-[11px] text-zinc-400 flex-shrink-0 font-normal">
                               {Math.round(lesson.durationSeconds / 60)}m
                             </span>
                           </Link>
@@ -375,19 +450,147 @@ export default function WatchLessonPage() {
                 ))}
               </div>
 
-              {/* Bottom Action Button: Ask AI Agent / Learn with AI Agent featuring IMG_2796.PNG icon */}
-              <div className="p-4 bg-[#1C1C1C] border-t border-white/10">
+              {/* Bottom Quick AI Agent Action Card */}
+              <div className="p-3.5 bg-zinc-50 border-t border-zinc-200">
                 <button
                   onClick={() => handleOpenAgentChat()}
-                  className="w-full bg-[#1F1F1F] hover:bg-[#282828] border border-white/12 hover:border-amber-400/50 text-white font-extrabold rounded-2xl py-3.5 px-5 text-xs transition-all duration-200 hover:scale-[1.01] flex items-center justify-center gap-3 shadow-md"
+                  className="w-full bg-white hover:bg-zinc-100 border border-zinc-300 hover:border-[#d33028] text-zinc-900 font-bold rounded-xl py-3 px-4 text-xs transition flex items-center justify-center gap-2.5 shadow-sm"
                 >
-                  <img src="/IMG_2796.PNG" alt="AI Agent" className="w-6 h-6 object-contain" />
-                  <span>Ask AI Agent / Learn with AI Agent</span>
+                  <img src="/IMG_2796.PNG" alt="AI Agent" className="w-5 h-5 object-contain" />
+                  <span>Ask AI Agent about this lesson</span>
                 </button>
               </div>
             </div>
-          ) : (
-            /* AI Agent View: Displays in front of Course Curriculum with Close X button */
+          )}
+
+          {/* 2. Overview & Notes View */}
+          {activeSection === 'overview' && (
+            <div className="flex-1 flex flex-col overflow-y-auto p-5 sm:p-6 space-y-6">
+              <div className="border-b border-zinc-200 pb-3">
+                <h3 className="font-bold text-zinc-900 text-xs uppercase tracking-wider flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-[#d33028]" />
+                  <span>Overview & Notes</span>
+                </h3>
+                <p className="text-[11px] text-zinc-500 mt-0.5">Lesson takeaways, instructor details & quick review</p>
+              </div>
+
+              {/* Highlighted AI Study Buddy Card */}
+              <div className="relative overflow-hidden p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 text-white border-2 border-[#d33028] shadow-xl shadow-[#d33028]/20 ring-4 ring-[#d33028]/10 space-y-4">
+                <div className="absolute -right-10 -bottom-10 w-44 h-44 bg-[#d33028]/25 rounded-full blur-3xl pointer-events-none" />
+                <div className="relative z-10 flex items-start gap-3.5">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#d33028] to-[#b82720] p-0.5 shadow-lg flex items-center justify-center shrink-0">
+                    <div className="w-full h-full bg-zinc-950 rounded-[10px] flex items-center justify-center">
+                      <img src="/IMG_2796.PNG" alt="AI Agent" className="w-7 h-7 object-contain" />
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-black text-white flex items-center gap-1.5">
+                      <span>AI Study Buddy & Quiz Ready</span>
+                      <Sparkles className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                    </h4>
+                    <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
+                      Instant doubts resolution, bullet point summaries, and 10-question quiz assessment.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="relative z-10 flex items-center gap-2 pt-1">
+                  <button
+                    onClick={() => handleOpenAgentQuiz()}
+                    className="flex-1 px-4 py-2.5 bg-[#d33028] hover:bg-[#b82720] text-white font-extrabold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 fill-current" />
+                    <span>Quiz Me</span>
+                  </button>
+                  <button
+                    onClick={() => handleOpenAgentChat('Summarize the key points of this lesson')}
+                    className="flex-1 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs transition border border-white/20 flex items-center justify-center gap-1.5"
+                  >
+                    <span>Summarize</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Lesson Learning Takeaways */}
+              <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-4 sm:p-5 space-y-2.5">
+                <h4 className="font-bold text-zinc-900 text-xs uppercase tracking-wider">Lesson Highlights</h4>
+                <ul className="text-xs text-zinc-600 space-y-2 list-disc pl-4 leading-relaxed">
+                  <li>Mastering composition techniques, Rule of Thirds, and lens compression.</li>
+                  <li>Real-world camera setups and lighting contrast from {course.instructorName}.</li>
+                  <li>Practical workflow methods and client delivery standards.</li>
+                </ul>
+              </div>
+
+              {/* Up Next Card */}
+              {nextLesson && (
+                <div className="bg-white border border-zinc-200 rounded-xl p-4 flex items-center justify-between gap-3 shadow-sm hover:border-zinc-300 transition">
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Up Next</span>
+                    <h5 className="text-xs font-bold text-zinc-900 truncate mt-0.5">{nextLesson.title}</h5>
+                    <span className="text-[11px] text-zinc-500">{Math.round(nextLesson.durationSeconds / 60)} mins</span>
+                  </div>
+                  <Link
+                    href={`/watch/${course.slug}/${nextLesson.id}`}
+                    className="px-3.5 py-1.5 bg-zinc-900 hover:bg-black text-white font-semibold rounded-lg text-xs transition flex items-center gap-1 shrink-0"
+                  >
+                    <span>Play Next</span>
+                    <ChevronRight className="w-3 h-3" />
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 3. Lesson Discussion (Q&A) View */}
+          {activeSection === 'discussion' && (
+            <div className="flex-1 flex flex-col overflow-y-auto p-5 sm:p-6 space-y-5">
+              <div className="border-b border-zinc-200 pb-3">
+                <h3 className="font-bold text-zinc-900 text-xs uppercase tracking-wider flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4 text-[#d33028]" />
+                  <span>Lesson Discussion & Q&A</span>
+                </h3>
+                <p className="text-[11px] text-zinc-500 mt-0.5">Ask questions and collaborate with peer creators</p>
+              </div>
+
+              <form onSubmit={handlePostQuestion} className="space-y-2.5 bg-zinc-50 border border-zinc-200 rounded-xl p-4 shadow-sm">
+                <h4 className="font-bold text-zinc-900 text-xs">Ask a Question</h4>
+                <textarea
+                  rows={3}
+                  placeholder="Ask a technical or creative question about this lesson..."
+                  value={newQuestionText}
+                  onChange={e => setNewQuestionText(e.target.value)}
+                  className="w-full bg-white border border-zinc-300 rounded-md p-3 text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#d33028]"
+                />
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    className="bg-[#d33028] hover:bg-[#b82720] text-white font-bold text-xs px-4 py-2 rounded-md transition flex items-center gap-1.5 shadow"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>Post Question</span>
+                  </button>
+                </div>
+              </form>
+
+              <div className="space-y-3">
+                {qaList.map(qa => (
+                  <div key={qa.id} className="p-4 bg-zinc-50 border border-zinc-200 rounded-xl space-y-2 text-xs shadow-sm">
+                    <div className="flex items-center gap-2.5">
+                      <img src={qa.userAvatar} alt={qa.userName} className="w-7 h-7 rounded-full object-cover border border-zinc-200" />
+                      <div>
+                        <span className="font-bold text-zinc-900">{qa.userName}</span>
+                        <span className="text-[10px] text-zinc-400 ml-2">{qa.createdAt}</span>
+                      </div>
+                    </div>
+                    <p className="text-zinc-700 pl-9 leading-relaxed">{qa.question}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 4. AI Agent View */}
+          {activeSection === 'agent' && (
             <div className="flex-1 min-h-0 h-full overflow-hidden">
               <UnifiedAgentPanel
                 isOpen={true}

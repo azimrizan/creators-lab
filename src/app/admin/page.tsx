@@ -36,22 +36,22 @@ export default function AdminDashboardPage() {
   }, []);
 
   return (
-    <div className="bg-[#0B0B0B] text-white min-h-screen pt-24 pb-20">
+    <div className="bg-white text-zinc-900 min-h-screen pt-24 pb-20">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 space-y-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 pb-6">
           <div>
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-6 h-6 text-[#E50914]" />
-              <h1 className="text-3xl font-extrabold text-white">Admin Control Console</h1>
+              <ShieldCheck className="w-6 h-6 text-[#d33028]" />
+              <h1 className="text-3xl font-extrabold text-zinc-900">Admin Control Console</h1>
             </div>
-            <p className="text-xs text-[#B3B3B3]">Live MongoDB Atlas aggregate metrics, editorial gatekeeping, user RBAC, and revenue logs</p>
+            <p className="text-xs text-zinc-500">Live MongoDB Atlas aggregate metrics, editorial gatekeeping, user RBAC, and revenue logs</p>
           </div>
 
           <div className="flex items-center gap-3">
             <button
               onClick={fetchLiveStats}
-              className="p-2.5 bg-[#141414] hover:bg-white/10 border border-white/15 rounded-md text-[#B3B3B3] hover:text-white transition"
+              className="p-2.5 bg-zinc-50 hover:bg-zinc-100 border border-zinc-300 rounded-md text-zinc-600 hover:text-zinc-900 transition shadow-sm"
               title="Refresh Live Metrics"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -59,7 +59,7 @@ export default function AdminDashboardPage() {
 
             <Link
               href="/admin/courses"
-              className="bg-[#E50914] hover:bg-[#b80710] text-white font-bold text-xs px-4 py-2.5 rounded-md flex items-center gap-2 transition shadow-lg"
+              className="bg-[#d33028] hover:bg-[#b82720] text-white font-bold text-xs px-4 py-2.5 rounded-md flex items-center gap-2 transition shadow-md"
             >
               <PlusCircle className="w-4 h-4" />
               <span>Create & Manage Courses</span>
@@ -69,40 +69,40 @@ export default function AdminDashboardPage() {
 
         {/* Metrics Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-[#141414] border border-white/10 p-5 rounded-xl space-y-2">
-            <div className="flex items-center justify-between text-xs text-[#B3B3B3]">
+          <div className="bg-zinc-50 border border-zinc-200 p-5 rounded-xl space-y-2 shadow-sm">
+            <div className="flex items-center justify-between text-xs text-zinc-500">
               <span>Gross Platform Revenue</span>
-              <DollarSign className="w-4 h-4 text-emerald-400" />
+              <DollarSign className="w-4 h-4 text-emerald-600" />
             </div>
-            <div className="text-2xl font-black text-white">₹{stats.totalSales.toLocaleString()}</div>
-            <p className="text-[11px] text-emerald-400 font-semibold">Live Razorpay Webhook Aggregation</p>
+            <div className="text-2xl font-black text-zinc-900">₹{stats.totalSales.toLocaleString()}</div>
+            <p className="text-[11px] text-emerald-700 font-semibold">Live Razorpay Webhook Aggregation</p>
           </div>
 
-          <div className="bg-[#141414] border border-white/10 p-5 rounded-xl space-y-2">
-            <div className="flex items-center justify-between text-xs text-[#B3B3B3]">
+          <div className="bg-zinc-50 border border-zinc-200 p-5 rounded-xl space-y-2 shadow-sm">
+            <div className="flex items-center justify-between text-xs text-zinc-500">
               <span>Total Learning Modules</span>
-              <BookOpen className="w-4 h-4 text-red-400" />
+              <BookOpen className="w-4 h-4 text-[#d33028]" />
             </div>
-            <div className="text-2xl font-black text-white">{stats.totalCourses}</div>
-            <p className="text-[11px] text-[#B3B3B3]">{stats.publishedCourses} Modules Live & Published</p>
+            <div className="text-2xl font-black text-zinc-900">{stats.totalCourses}</div>
+            <p className="text-[11px] text-zinc-500">{stats.publishedCourses} Modules Live & Published</p>
           </div>
 
-          <div className="bg-[#141414] border border-white/10 p-5 rounded-xl space-y-2">
-            <div className="flex items-center justify-between text-xs text-[#B3B3B3]">
+          <div className="bg-zinc-50 border border-zinc-200 p-5 rounded-xl space-y-2 shadow-sm">
+            <div className="flex items-center justify-between text-xs text-zinc-500">
               <span>Registered Accounts</span>
-              <Users className="w-4 h-4 text-sky-400" />
+              <Users className="w-4 h-4 text-sky-600" />
             </div>
-            <div className="text-2xl font-black text-white">{stats.totalUsers}</div>
-            <p className="text-[11px] text-[#B3B3B3]">MongoDB Atlas Encrypted Users</p>
+            <div className="text-2xl font-black text-zinc-900">{stats.totalUsers}</div>
+            <p className="text-[11px] text-zinc-500">MongoDB Atlas Encrypted Users</p>
           </div>
 
-          <div className="bg-[#141414] border border-white/10 p-5 rounded-xl space-y-2">
-            <div className="flex items-center justify-between text-xs text-[#B3B3B3]">
+          <div className="bg-zinc-50 border border-zinc-200 p-5 rounded-xl space-y-2 shadow-sm">
+            <div className="flex items-center justify-between text-xs text-zinc-500">
               <span>Completed Orders</span>
-              <CheckCircle className="w-4 h-4 text-amber-400" />
+              <CheckCircle className="w-4 h-4 text-amber-500" />
             </div>
-            <div className="text-2xl font-black text-white">{stats.successfulOrders}</div>
-            <p className="text-[11px] text-amber-400 font-semibold">100% Fulfilled Orders</p>
+            <div className="text-2xl font-black text-zinc-900">{stats.successfulOrders}</div>
+            <p className="text-[11px] text-amber-600 font-semibold">100% Fulfilled Orders</p>
           </div>
         </div>
 
@@ -110,14 +110,14 @@ export default function AdminDashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Link
             href="/admin/courses"
-            className="bg-[#141414] border border-white/10 hover:border-[#E50914]/50 p-6 rounded-xl space-y-3 group transition"
+            className="bg-white border border-zinc-200 hover:border-[#d33028] p-6 rounded-xl space-y-3 group transition shadow-sm hover:shadow-md"
           >
-            <div className="p-3 bg-red-500/20 text-[#E50914] rounded-lg w-max border border-[#E50914]/30">
+            <div className="p-3 bg-[#d33028]/10 text-[#d33028] rounded-lg w-max border border-[#d33028]/30">
               <BookOpen className="w-6 h-6" />
             </div>
-            <h3 className="font-bold text-white text-base group-hover:text-red-400 transition">Course Catalog Gatekeeper</h3>
-            <p className="text-xs text-[#B3B3B3]">Approve, edit, publish or draft learning modules across categories.</p>
-            <div className="text-xs font-bold text-[#E50914] flex items-center gap-1 pt-2">
+            <h3 className="font-bold text-zinc-900 text-base group-hover:text-[#d33028] transition">Course Catalog Gatekeeper</h3>
+            <p className="text-xs text-zinc-500">Approve, edit, publish or draft learning modules across categories.</p>
+            <div className="text-xs font-bold text-[#d33028] flex items-center gap-1 pt-2">
               <span>Manage Courses</span>
               <ArrowRight className="w-4 h-4" />
             </div>
@@ -125,14 +125,14 @@ export default function AdminDashboardPage() {
 
           <Link
             href="/admin/users"
-            className="bg-[#141414] border border-white/10 hover:border-[#E50914]/50 p-6 rounded-xl space-y-3 group transition"
+            className="bg-white border border-zinc-200 hover:border-[#d33028] p-6 rounded-xl space-y-3 group transition shadow-sm hover:shadow-md"
           >
-            <div className="p-3 bg-sky-500/20 text-sky-400 rounded-lg w-max border border-sky-500/30">
+            <div className="p-3 bg-sky-50 text-sky-600 rounded-lg w-max border border-sky-200">
               <Users className="w-6 h-6" />
             </div>
-            <h3 className="font-bold text-white text-base group-hover:text-red-400 transition">User & Student Management</h3>
-            <p className="text-xs text-[#B3B3B3]">Audit student enrollments, inspect progress, and manage platform roles.</p>
-            <div className="text-xs font-bold text-[#E50914] flex items-center gap-1 pt-2">
+            <h3 className="font-bold text-zinc-900 text-base group-hover:text-[#d33028] transition">User & Student Management</h3>
+            <p className="text-xs text-zinc-500">Audit student enrollments, inspect progress, and manage platform roles.</p>
+            <div className="text-xs font-bold text-[#d33028] flex items-center gap-1 pt-2">
               <span>Manage Users</span>
               <ArrowRight className="w-4 h-4" />
             </div>
@@ -140,14 +140,14 @@ export default function AdminDashboardPage() {
 
           <Link
             href="/admin/orders"
-            className="bg-[#141414] border border-white/10 hover:border-[#E50914]/50 p-6 rounded-xl space-y-3 group transition"
+            className="bg-white border border-zinc-200 hover:border-[#d33028] p-6 rounded-xl space-y-3 group transition shadow-sm hover:shadow-md"
           >
-            <div className="p-3 bg-emerald-500/20 text-emerald-400 rounded-lg w-max border border-emerald-500/30">
+            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-lg w-max border border-emerald-200">
               <DollarSign className="w-6 h-6" />
             </div>
-            <h3 className="font-bold text-white text-base group-hover:text-red-400 transition">Orders & Transactions</h3>
-            <p className="text-xs text-[#B3B3B3]">Inspect Razorpay payment IDs, order timestamps, and revenue logs.</p>
-            <div className="text-xs font-bold text-[#E50914] flex items-center gap-1 pt-2">
+            <h3 className="font-bold text-zinc-900 text-base group-hover:text-[#d33028] transition">Orders & Transactions</h3>
+            <p className="text-xs text-zinc-500">Inspect Razorpay payment IDs, order timestamps, and revenue logs.</p>
+            <div className="text-xs font-bold text-[#d33028] flex items-center gap-1 pt-2">
               <span>View Orders</span>
               <ArrowRight className="w-4 h-4" />
             </div>

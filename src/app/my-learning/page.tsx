@@ -16,29 +16,29 @@ export default function MyLearningPage() {
   );
 
   return (
-    <div className="bg-[#0B0B0B] text-white min-h-screen pt-24 pb-20">
+    <div className="bg-white text-zinc-900 min-h-screen pt-24 pb-20">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 space-y-8">
         {/* Page Header */}
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#E50914]/20 border border-[#E50914]/30 text-red-400 text-xs font-bold uppercase">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#d33028]/10 border border-[#d33028]/30 text-[#d33028] text-xs font-bold uppercase">
             <BookOpen className="w-3.5 h-3.5" />
             <span>Student Dashboard</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">My Enrolled Courses</h1>
-          <p className="text-xs text-[#B3B3B3]">Track your active progress, stream video lessons, and claim QR-verified certificates</p>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight">My Enrolled Courses</h1>
+          <p className="text-xs text-zinc-500">Track your active progress, stream video lessons, and claim QR-verified certificates</p>
         </div>
 
         {/* Course Grid */}
         {enrolledCourses.length === 0 ? (
-          <div className="bg-[#141414] border border-white/10 rounded-xl p-12 text-center space-y-4 max-w-md mx-auto">
-            <BookOpen className="w-12 h-12 text-slate-600 mx-auto" />
+          <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-12 text-center space-y-4 max-w-md mx-auto">
+            <BookOpen className="w-12 h-12 text-zinc-400 mx-auto" />
             <div className="space-y-1">
-              <h3 className="text-white font-bold text-base">No active course enrollments</h3>
-              <p className="text-xs text-[#B3B3B3]">Browse our catalog and start learning today!</p>
+              <h3 className="text-zinc-900 font-bold text-base">No active course enrollments</h3>
+              <p className="text-xs text-zinc-500">Browse our catalog and start learning today!</p>
             </div>
             <Link
               href="/courses"
-              className="inline-flex items-center gap-2 bg-[#E50914] hover:bg-[#b80710] text-white font-bold text-xs px-6 py-3 rounded-md transition shadow-lg"
+              className="inline-flex items-center gap-2 bg-[#d33028] hover:bg-[#b82720] text-white font-bold text-xs px-6 py-3 rounded-md transition shadow-md"
             >
               <span>Browse Catalog</span>
             </Link>
@@ -56,14 +56,14 @@ export default function MyLearningPage() {
               const itemKey = courseId || `my-learn-${idx}`;
 
               return (
-                <div key={itemKey} className="bg-[#141414] border border-white/10 rounded-xl overflow-hidden flex flex-col justify-between p-5 space-y-4 shadow-xl">
+                <div key={itemKey} className="bg-white border border-zinc-200 rounded-xl overflow-hidden flex flex-col justify-between p-5 space-y-4 shadow-sm">
                   <div className="space-y-3">
-                    <div className="relative aspect-video rounded-lg overflow-hidden bg-black">
+                    <div className="relative aspect-video rounded-lg overflow-hidden bg-zinc-100">
                       <img src={getSafeThumbnail(course.thumbnail)} alt={course.title} className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                         <Link
                           href={`/watch/${course.slug}/${firstLesson?.id || 'les-1'}`}
-                          className="w-12 h-12 rounded-full bg-[#E50914] text-white flex items-center justify-center shadow-lg hover:scale-110 transition"
+                          className="w-12 h-12 rounded-full bg-[#d33028] text-white flex items-center justify-center shadow-lg hover:scale-110 transition"
                         >
                           <Play className="w-6 h-6 fill-current translate-x-0.5" />
                         </Link>
@@ -71,27 +71,27 @@ export default function MyLearningPage() {
                     </div>
 
                     <div>
-                      <h3 className="font-bold text-white text-base line-clamp-1">{course.title}</h3>
-                      <p className="text-xs text-[#B3B3B3]">By {course.instructorName}</p>
+                      <h3 className="font-bold text-zinc-900 text-base line-clamp-1">{course.title}</h3>
+                      <p className="text-xs text-zinc-500">By {course.instructorName}</p>
                     </div>
 
                     {/* Progress Bar */}
                     <div className="space-y-1.5 pt-1">
                       <div className="flex justify-between text-xs font-semibold">
-                        <span className="text-[#B3B3B3]">Course Progress</span>
-                        <span className="text-red-400 font-bold">{percent}%</span>
+                        <span className="text-zinc-500">Course Progress</span>
+                        <span className="text-[#d33028] font-bold">{percent}%</span>
                       </div>
-                      <div className="w-full bg-[#0B0B0B] h-2 rounded-full overflow-hidden border border-white/10">
-                        <div className="bg-[#E50914] h-full rounded-full transition-all duration-500" style={{ width: `${percent}%` }} />
+                      <div className="w-full bg-zinc-100 h-2 rounded-full overflow-hidden border border-zinc-200">
+                        <div className="bg-[#d33028] h-full rounded-full transition-all duration-500" style={{ width: `${percent}%` }} />
                       </div>
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+                  <div className="pt-3 border-t border-zinc-100 flex items-center justify-between">
                     <Link
                       href={`/watch/${course.slug}/${firstLesson?.id || 'les-1'}`}
-                      className="bg-[#E50914] hover:bg-[#b80710] text-white font-bold px-4 py-2 rounded-md transition text-xs flex items-center gap-1.5"
+                      className="bg-[#d33028] hover:bg-[#b82720] text-white font-bold px-4 py-2 rounded-md transition text-xs flex items-center gap-1.5 shadow-sm"
                     >
                       <Play className="w-3.5 h-3.5 fill-current" />
                       <span>{isCompleted ? 'Review Course' : 'Resume'}</span>
@@ -100,9 +100,9 @@ export default function MyLearningPage() {
                     {isCompleted && (
                       <Link
                         href="/certificates"
-                        className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold px-3 py-2 rounded-md transition flex items-center gap-1.5"
+                        className="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs font-bold px-3 py-2 rounded-md transition flex items-center gap-1.5"
                       >
-                        <Award className="w-3.5 h-3.5 text-amber-400" />
+                        <Award className="w-3.5 h-3.5 text-amber-600" />
                         <span>Certificate</span>
                       </Link>
                     )}

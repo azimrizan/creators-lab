@@ -70,18 +70,18 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
   return (
     <>
-      <div className="fixed inset-0 z-50 overflow-hidden bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
         <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-          <div className="w-screen max-w-md bg-[#141414] border-l border-white/10 text-white shadow-2xl flex flex-col justify-between">
+          <div className="w-screen max-w-md bg-white border-l border-zinc-200 text-zinc-900 shadow-2xl flex flex-col justify-between">
             {/* Header */}
-            <div className="p-6 border-b border-white/10 flex items-center justify-between bg-[#1C1C1C]">
+            <div className="p-6 border-b border-zinc-200 flex items-center justify-between bg-zinc-50">
               <div className="flex items-center gap-2">
-                <ShoppingBag className="w-5 h-5 text-[#E50914]" />
-                <h2 className="text-base font-bold text-white">Your Cart ({cartCourses.length})</h2>
+                <ShoppingBag className="w-5 h-5 text-[#d33028]" />
+                <h2 className="text-base font-bold text-zinc-900">Your Cart ({cartCourses.length})</h2>
               </div>
               <button
                 onClick={onClose}
-                className="text-[#B3B3B3] hover:text-white p-1.5 rounded-md hover:bg-white/10 transition"
+                className="text-zinc-400 hover:text-zinc-700 p-1.5 rounded-md hover:bg-zinc-200 transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -90,18 +90,18 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             {/* Cart Items List */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {cartCourses.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center space-y-4 text-[#B3B3B3]">
-                  <div className="p-4 rounded-full bg-[#1C1C1C] border border-white/10">
-                    <ShoppingBag className="w-8 h-8 text-slate-500" />
+                <div className="h-full flex flex-col items-center justify-center text-center space-y-4 text-zinc-500">
+                  <div className="p-4 rounded-full bg-zinc-100 border border-zinc-200">
+                    <ShoppingBag className="w-8 h-8 text-zinc-400" />
                   </div>
                   <div className="space-y-1">
-                    <p className="font-bold text-white text-base">Your cart is empty</p>
+                    <p className="font-bold text-zinc-900 text-base">Your cart is empty</p>
                     <p className="text-xs">Explore our catalog and start learning today!</p>
                   </div>
                   <Link
                     href="/courses"
                     onClick={onClose}
-                    className="bg-[#E50914] hover:bg-[#b80710] text-white font-bold text-xs px-5 py-2.5 rounded-md transition"
+                    className="bg-[#d33028] hover:bg-[#b82720] text-white font-bold text-xs px-5 py-2.5 rounded-md transition"
                   >
                     Browse Catalog
                   </Link>
@@ -112,7 +112,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   return (
                     <div
                       key={courseId || `cart-item-${idx}`}
-                      className="bg-[#1C1C1C] border border-white/10 rounded-xl p-3.5 flex gap-3 group"
+                      className="bg-zinc-50 border border-zinc-200 rounded-xl p-3.5 flex gap-3 group shadow-sm"
                     >
                       <img
                         src={getSafeThumbnail(course.thumbnail)}
@@ -121,16 +121,16 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       />
                       <div className="flex-1 min-w-0 flex flex-col justify-between">
                         <div>
-                          <h4 className="text-xs font-bold text-white truncate">{course.title}</h4>
-                          <p className="text-[11px] text-[#B3B3B3]">By {course.instructorName}</p>
+                          <h4 className="text-xs font-bold text-zinc-900 truncate">{course.title}</h4>
+                          <p className="text-[11px] text-zinc-500">By {course.instructorName}</p>
                         </div>
                         <div className="flex items-center justify-between pt-1">
-                          <span className="text-xs font-extrabold text-red-400">
+                          <span className="text-xs font-extrabold text-[#d33028]">
                             ₹{course.discountPrice || course.price}
                           </span>
                           <button
                             onClick={() => removeFromCart(courseId)}
-                            className="text-[#B3B3B3] hover:text-red-400 p-1 transition"
+                            className="text-zinc-400 hover:text-red-500 p-1 transition"
                             title="Remove"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -145,61 +145,61 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
             {/* Footer Summary & Checkout */}
             {cartCourses.length > 0 && (
-              <div className="p-6 border-t border-white/10 bg-[#1C1C1C] space-y-4">
+              <div className="p-6 border-t border-zinc-200 bg-zinc-50 space-y-4">
                 {/* Coupon Input */}
                 <form onSubmit={handleApplyCoupon} className="space-y-1.5">
                   <div className="flex gap-2">
                     <div className="relative flex-1">
-                      <Tag className="w-3.5 h-3.5 text-[#B3B3B3] absolute left-3 top-2.5" />
+                      <Tag className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-2.5" />
                       <input
                         type="text"
                         placeholder="Enter CREATORS20"
                         value={couponCode}
                         onChange={e => setCouponCode(e.target.value)}
-                        className="w-full bg-[#0B0B0B] border border-white/15 rounded-md pl-8 pr-3 py-2 text-xs text-white uppercase placeholder:text-slate-500 focus:outline-none focus:border-[#E50914]"
+                        className="w-full bg-white border border-zinc-300 rounded-md pl-8 pr-3 py-2 text-xs text-zinc-900 uppercase placeholder:text-zinc-400 focus:outline-none focus:border-[#d33028]"
                       />
                     </div>
                     <button
                       type="submit"
-                      className="bg-[#2A2A2A] hover:bg-white/20 text-white font-bold text-xs px-3.5 py-2 rounded-md border border-white/10 transition"
+                      className="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-bold text-xs px-3.5 py-2 rounded-md border border-zinc-300 transition"
                     >
                       Apply
                     </button>
                   </div>
                   {appliedCoupon && (
-                    <p className="text-[11px] text-emerald-400 font-bold flex items-center gap-1">
+                    <p className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
                       <Check className="w-3 h-3" /> Code {appliedCoupon} applied (20% OFF)!
                     </p>
                   )}
-                  {couponError && <p className="text-[11px] text-red-400 font-medium">{couponError}</p>}
+                  {couponError && <p className="text-[11px] text-rose-600 font-medium">{couponError}</p>}
                 </form>
 
                 {/* Price Calculation */}
-                <div className="space-y-1.5 text-xs text-[#B3B3B3] pt-2 border-t border-white/10">
+                <div className="space-y-1.5 text-xs text-zinc-600 pt-2 border-t border-zinc-200">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span className="text-white font-medium">₹{rawSubtotal.toFixed(2)}</span>
+                    <span className="text-zinc-900 font-medium">₹{rawSubtotal.toFixed(2)}</span>
                   </div>
                   {appliedCoupon && (
-                    <div className="flex justify-between text-emerald-400">
+                    <div className="flex justify-between text-emerald-700 font-medium">
                       <span>Discount (20%)</span>
                       <span>-₹{discountAmount.toFixed(2)}</span>
                     </div>
                   )}
                   <div className="flex justify-between">
                     <span>GST Tax (18%)</span>
-                    <span className="text-white font-medium">₹{taxAmount.toFixed(2)}</span>
+                    <span className="text-zinc-900 font-medium">₹{taxAmount.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between pt-2 border-t border-white/10 text-sm font-extrabold text-white">
+                  <div className="flex justify-between pt-2 border-t border-zinc-200 text-sm font-extrabold text-zinc-900">
                     <span>Total Amount</span>
-                    <span className="text-red-400">₹{finalTotal.toFixed(2)}</span>
+                    <span className="text-[#d33028]">₹{finalTotal.toFixed(2)}</span>
                   </div>
                 </div>
 
                 {/* Checkout Trigger */}
                 <button
                   onClick={handleCheckout}
-                  className="w-full bg-[#E50914] hover:bg-[#b80710] text-white font-bold py-3 rounded-md transition flex items-center justify-center gap-2 shadow-lg text-xs"
+                  className="w-full bg-[#d33028] hover:bg-[#b82720] text-white font-bold py-3 rounded-md transition flex items-center justify-center gap-2 shadow-lg text-xs"
                 >
                   <Lock className="w-4 h-4" />
                   <span>Proceed to Razorpay Checkout</span>

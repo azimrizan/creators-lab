@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
@@ -32,7 +32,7 @@ export default function HomePage() {
     }
   }, [isInstructor, isAdmin, router]);
 
-  const HERO_BANNER_IMG = "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=2000&q=80";
+  const HERO_BANNER_IMG = "/creators lab.jpg.jpeg";
 
   const featuredCourse = courses[0] || {
     id: 'course-1',
@@ -86,47 +86,41 @@ export default function HomePage() {
   const scrollRow = (rowId: string, direction: 'left' | 'right') => {
     const el = document.getElementById(rowId);
     if (el) {
-      const scrollAmount = direction === 'left' ? -600 : 600;
+      const scrollAmount = direction === 'left' ? -Math.round(el.clientWidth * 0.75) : Math.round(el.clientWidth * 0.75);
       el.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
   return (
-    <div className="bg-[#141414] text-white min-h-screen pb-20 font-sans antialiased selection:bg-red-600 selection:text-white">
+    <div className="bg-white text-zinc-900 min-h-screen pb-20 font-sans antialiased selection:bg-[#d33028] selection:text-white">
       
       {/* Hero Showcase Section */}
       <section className="relative w-full h-[85vh] min-h-[620px] flex items-center">
         {/* Background Image Container */}
         <div className="absolute inset-0 z-0">
           <img
-            src={featuredCourse.thumbnail || HERO_BANNER_IMG}
+            src={HERO_BANNER_IMG}
             alt={featuredCourse.title}
-            className="w-full h-full object-cover object-center filter brightness-90"
+            className="w-full h-full object-cover object-center filter brightness-100"
           />
-          {/* Gradient Overlays matching Netflix Vignette */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#141414] via-[#141414]/60 to-transparent w-full md:w-2/3" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-black/40" />
+          {/* Gradient Overlays fading into white */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent w-full md:w-2/3" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/20 to-transparent" />
         </div>
 
         {/* Hero Content */}
         <div className="relative z-10 px-4 sm:px-12 max-w-2xl mt-12 space-y-4">
-          {/* Category Dropdown Indicator / Brand Header */}
-          <div className="flex items-center gap-3">
-            <span className="bg-[#E50914] text-white font-extrabold text-xs px-2.5 py-1 rounded tracking-wider uppercase flex items-center gap-1.5 shadow-lg">
-              <Sparkles className="w-3.5 h-3.5" />
-              Creators Masterclass
-            </span>
-          </div>
+         
 
           {/* Masterclass Title */}
           <div className="pt-2">
-            <h1 className="text-3xl sm:text-5xl font-black italic tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-400 to-red-500 drop-shadow-md">
+            <h1 className="text-3xl sm:text-5xl font-black italic tracking-tight text-black drop-shadow-sm">
               {featuredCourse.title}
             </h1>
           </div>
 
           {/* Subtitle / Description */}
-          <p className="text-gray-200 text-sm sm:text-base line-clamp-3 leading-relaxed max-w-xl font-normal drop-shadow">
+          <p className="text-zinc-700 text-sm sm:text-base line-clamp-3 leading-relaxed max-w-xl font-normal drop-shadow-sm">
             {featuredCourse.subtitle}
           </p>
 
@@ -134,103 +128,98 @@ export default function HomePage() {
           <div className="flex items-center gap-3 pt-2">
             <Link
               href={`/course/${featuredCourse.slug}`}
-              className="inline-flex items-center gap-2 bg-white hover:bg-white/80 text-black font-bold px-6 py-2.5 rounded transition shadow"
+              className="inline-flex items-center gap-2 bg-[#d33028] hover:bg-[#b82720] text-white font-bold px-6 py-2.5 rounded transition shadow"
             >
-              <Play className="w-5 h-5 fill-black translate-x-0.5" />
+              <Play className="w-5 h-5 fill-white translate-x-0.5" />
               <span className="text-base">Stream Masterclass</span>
             </Link>
 
             <Link
               href={`/course/${featuredCourse.slug}`}
-              className="inline-flex items-center gap-2 bg-gray-500/70 hover:bg-gray-500/50 text-white font-semibold px-6 py-2.5 rounded transition backdrop-blur-sm"
+              className="inline-flex items-center gap-2 bg-white/90 hover:bg-white text-zinc-900 font-semibold px-6 py-2.5 rounded border border-zinc-300 transition shadow-sm backdrop-blur-sm"
             >
-              <Info className="w-5 h-5" />
+              <Info className="w-5 h-5 text-zinc-700" />
               <span className="text-base">Curriculum & Details</span>
             </Link>
           </div>
         </div>
 
         {/* Studio Badge */}
-        <div className="absolute right-0 bottom-36 bg-zinc-900/90 border-l-4 border-[#E50914] text-gray-200 text-xs font-bold px-4 py-1.5 backdrop-blur-sm">
+        <div className="absolute right-0 bottom-36 bg-white border-l-4 border-[#d33028] text-zinc-800 text-xs font-bold px-4 py-1.5 shadow-md">
           CREATORS LAB ORIGINAL
         </div>
       </section>
 
       {/* Main Content Rows Section */}
-      <div className="relative z-20 px-4 sm:px-12 -mt-24 space-y-12">
+      <div className="relative z-20 -mt-20">
 
         {/* Top 10 Ranked Row */}
-        <section className="space-y-3 relative group/row">
-          <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
-            Top 10 Movies in India Today
-          </h2>
+        <section className="relative group/row py-6 sm:py-8 bg-white">
+          <div className="w-full bg-[#d33028] px-4 sm:px-12 py-2 sm:py-2.5 mb-4 flex items-center shadow-sm">
+            <h2 className="text-white font-bold text-sm sm:text-base tracking-wide flex items-center gap-2">
+              Top 10 Movies in India Today
+            </h2>
+          </div>
 
           <div className="relative">
             <button
               onClick={() => scrollRow('row-top10', 'left')}
-              className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
               aria-label="Scroll left"
             >
-              <ChevronLeft className="w-8 h-8" />
+              <ChevronLeft className="w-6 h-6" />
             </button>
 
             <div 
               id="row-top10" 
-              className="flex items-center gap-2 overflow-x-auto no-scrollbar py-4 px-1 scroll-snap-x scrollbar-none"
+              className="flex items-center gap-5 sm:gap-6 overflow-x-auto no-scrollbar py-2 px-4 sm:px-12 scroll-snap-x scrollbar-none w-full"
             >
               {trendingCourses.slice(0, 10).map((course, idx) => (
                 <div 
                   key={course.id || (course as any)._id || `top10-${idx}`} 
-                  className="relative flex items-center flex-shrink-0 w-44 sm:w-56 group/card cursor-pointer"
+                  className="w-[75vw] sm:w-[44vw] md:w-[30vw] lg:w-[calc((100vw-210px)/4.3)] flex-shrink-0 transition-transform duration-300 hover:scale-105"
                 >
-                  {/* Large Stylized Number SVG */}
-                  <span className="text-[120px] sm:text-[140px] font-black leading-none text-black stroke-neutral-600 select-none -mr-6 z-0 font-sans tracking-tighter"
-                        style={{ WebkitTextStroke: '3px #595959' }}>
-                    {idx + 1}
-                  </span>
-
-                  {/* Course Card Component Wrapped */}
-                  <div className="relative z-10 w-28 sm:w-36 flex-shrink-0 transition-transform duration-300 group-hover/card:scale-105">
-                    <CourseCard course={course} />
-                  </div>
+                  <CourseCard course={course} imageClassName="h-44 sm:h-52 w-full object-cover" />
                 </div>
               ))}
             </div>
 
             <button
               onClick={() => scrollRow('row-top10', 'right')}
-              className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
               aria-label="Scroll right"
             >
-              <ChevronRight className="w-8 h-8" />
+              <ChevronRight className="w-6 h-6" />
             </button>
           </div>
         </section>
 
         {/* Continue Watching Row (If enrolled) */}
         {enrolledCourses.length > 0 && (
-          <section className="space-y-3 relative group/row">
-            <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
-              Continue Learning for {currentUser.name || 'Creator'}
-            </h2>
+          <section className="relative group/row py-6 sm:py-8 bg-white">
+            <div className="w-full bg-[#d33028] px-4 sm:px-12 py-2 sm:py-2.5 mb-4 flex items-center shadow-sm">
+              <h2 className="text-white font-bold text-sm sm:text-base tracking-wide flex items-center gap-2">
+                Continue Learning for {currentUser.name || 'Creator'}
+              </h2>
+            </div>
 
             <div className="relative">
               <button
                 onClick={() => scrollRow('row-continue', 'left')}
-                className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
                 aria-label="Scroll left"
               >
-                <ChevronLeft className="w-8 h-8" />
+                <ChevronLeft className="w-6 h-6" />
               </button>
 
               <div 
                 id="row-continue" 
-                className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 scroll-snap-x scrollbar-none"
+                className="flex items-center gap-5 sm:gap-6 overflow-x-auto no-scrollbar py-2 px-4 sm:px-12 scroll-snap-x scrollbar-none w-full"
               >
                 {enrolledCourses.map((course, idx) => (
                   <div 
                     key={course.id || (course as any)._id || `cont-${idx}`} 
-                    className="w-48 sm:w-64 flex-shrink-0 transition-transform duration-300 hover:scale-105"
+                    className="w-[75vw] sm:w-[44vw] md:w-[30vw] lg:w-[calc((100vw-210px)/4.3)] flex-shrink-0 transition-transform duration-300 hover:scale-105"
                   >
                     <CourseCard course={course} />
                   </div>
@@ -239,41 +228,41 @@ export default function HomePage() {
 
               <button
                 onClick={() => scrollRow('row-continue', 'right')}
-                className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
                 aria-label="Scroll right"
               >
-                <ChevronRight className="w-8 h-8" />
+                <ChevronRight className="w-6 h-6" />
               </button>
             </div>
           </section>
         )}
 
         {/* Top Rated Masterclasses */}
-        <section className="space-y-3 relative group/row">
-          <div className="flex items-center gap-2">
-            <Award className="w-5 h-5 text-amber-400" />
-            <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
-              Acclaimed Masterclasses & Originals
+        <section className="relative group/row py-6 sm:py-8 bg-white">
+          <div className="w-full bg-[#d33028] px-4 sm:px-12 py-2 sm:py-2.5 mb-4 flex items-center shadow-sm">
+            <h2 className="text-white font-bold text-sm sm:text-base tracking-wide flex items-center gap-2">
+              <Award className="w-4 h-4 text-white" />
+              <span>Acclaimed Masterclasses & Originals</span>
             </h2>
           </div>
 
           <div className="relative">
             <button
               onClick={() => scrollRow('row-toprated', 'left')}
-              className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
               aria-label="Scroll left"
             >
-              <ChevronLeft className="w-8 h-8" />
+              <ChevronLeft className="w-6 h-6" />
             </button>
 
             <div 
               id="row-toprated" 
-              className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 scroll-snap-x scrollbar-none"
+              className="flex items-center gap-5 sm:gap-6 overflow-x-auto no-scrollbar py-2 px-4 sm:px-12 scroll-snap-x scrollbar-none w-full"
             >
               {topRatedCourses.map((course, idx) => (
                 <div 
                   key={course.id || (course as any)._id || `top-${idx}`} 
-                  className="w-48 sm:w-64 flex-shrink-0 transition-transform duration-300 hover:scale-105"
+                  className="w-[75vw] sm:w-[44vw] md:w-[30vw] lg:w-[calc((100vw-210px)/4.3)] flex-shrink-0 transition-transform duration-300 hover:scale-105"
                 >
                   <CourseCard course={course} />
                 </div>
@@ -282,38 +271,40 @@ export default function HomePage() {
 
             <button
               onClick={() => scrollRow('row-toprated', 'right')}
-              className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
               aria-label="Scroll right"
             >
-              <ChevronRight className="w-8 h-8" />
+              <ChevronRight className="w-6 h-6" />
             </button>
           </div>
         </section>
 
         {/* Cinematography & Directing Row */}
         {cinemaCourses.length > 0 && (
-          <section className="space-y-3 relative group/row">
-            <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
-              Cinematography, Directing & Visual Storytelling
-            </h2>
+          <section className="relative group/row py-6 sm:py-8 bg-white">
+            <div className="w-full bg-[#d33028] px-4 sm:px-12 py-2 sm:py-2.5 mb-4 flex items-center shadow-sm">
+              <h2 className="text-white font-bold text-sm sm:text-base tracking-wide flex items-center gap-2">
+                Cinematography, Directing & Visual Storytelling
+              </h2>
+            </div>
 
             <div className="relative">
               <button
                 onClick={() => scrollRow('row-cinema', 'left')}
-                className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
                 aria-label="Scroll left"
               >
-                <ChevronLeft className="w-8 h-8" />
+                <ChevronLeft className="w-6 h-6" />
               </button>
 
               <div 
                 id="row-cinema" 
-                className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 scroll-snap-x scrollbar-none"
+                className="flex items-center gap-5 sm:gap-6 overflow-x-auto no-scrollbar py-2 px-4 sm:px-12 scroll-snap-x scrollbar-none w-full"
               >
                 {cinemaCourses.map((course, idx) => (
                   <div 
                     key={course.id || (course as any)._id || `cinema-${idx}`} 
-                    className="w-48 sm:w-64 flex-shrink-0 transition-transform duration-300 hover:scale-105"
+                    className="w-[75vw] sm:w-[44vw] md:w-[30vw] lg:w-[calc((100vw-210px)/4.3)] flex-shrink-0 transition-transform duration-300 hover:scale-105"
                   >
                     <CourseCard course={course} />
                   </div>
@@ -322,10 +313,10 @@ export default function HomePage() {
 
               <button
                 onClick={() => scrollRow('row-cinema', 'right')}
-                className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
                 aria-label="Scroll right"
               >
-                <ChevronRight className="w-8 h-8" />
+                <ChevronRight className="w-6 h-6" />
               </button>
             </div>
           </section>
@@ -333,28 +324,30 @@ export default function HomePage() {
 
         {/* Video Editing & Color Grading Row */}
         {editingCourses.length > 0 && (
-          <section className="space-y-3 relative group/row">
-            <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
-              Video Editing, Color Grading & Post-Production
-            </h2>
+          <section className="relative group/row py-6 sm:py-8 bg-white">
+            <div className="w-full bg-[#d33028] px-4 sm:px-12 py-2 sm:py-2.5 mb-4 flex items-center shadow-sm">
+              <h2 className="text-white font-bold text-sm sm:text-base tracking-wide flex items-center gap-2">
+                Video Editing, Color Grading & Post-Production
+              </h2>
+            </div>
 
             <div className="relative">
               <button
                 onClick={() => scrollRow('row-editing', 'left')}
-                className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
                 aria-label="Scroll left"
               >
-                <ChevronLeft className="w-8 h-8" />
+                <ChevronLeft className="w-6 h-6" />
               </button>
 
               <div 
                 id="row-editing" 
-                className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 scroll-snap-x scrollbar-none"
+                className="flex items-center gap-5 sm:gap-6 overflow-x-auto no-scrollbar py-2 px-4 sm:px-12 scroll-snap-x scrollbar-none w-full"
               >
                 {editingCourses.map((course, idx) => (
                   <div 
                     key={course.id || (course as any)._id || `editing-${idx}`} 
-                    className="w-48 sm:w-64 flex-shrink-0 transition-transform duration-300 hover:scale-105"
+                    className="w-[75vw] sm:w-[44vw] md:w-[30vw] lg:w-[calc((100vw-210px)/4.3)] flex-shrink-0 transition-transform duration-300 hover:scale-105"
                   >
                     <CourseCard course={course} />
                   </div>
@@ -363,10 +356,10 @@ export default function HomePage() {
 
               <button
                 onClick={() => scrollRow('row-editing', 'right')}
-                className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
                 aria-label="Scroll right"
               >
-                <ChevronRight className="w-8 h-8" />
+                <ChevronRight className="w-6 h-6" />
               </button>
             </div>
           </section>
@@ -374,28 +367,30 @@ export default function HomePage() {
 
         {/* 3D Animation & Motion Design Row */}
         {motion3dCourses.length > 0 && (
-          <section className="space-y-3 relative group/row">
-            <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
-              3D Animation, Blender Worlds & Motion Graphics
-            </h2>
+          <section className="relative group/row py-6 sm:py-8 bg-white">
+            <div className="w-full bg-[#d33028] px-4 sm:px-12 py-2 sm:py-2.5 mb-4 flex items-center shadow-sm">
+              <h2 className="text-white font-bold text-sm sm:text-base tracking-wide flex items-center gap-2">
+                3D Animation, Blender Worlds & Motion Graphics
+              </h2>
+            </div>
 
             <div className="relative">
               <button
                 onClick={() => scrollRow('row-motion3d', 'left')}
-                className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
                 aria-label="Scroll left"
               >
-                <ChevronLeft className="w-8 h-8" />
+                <ChevronLeft className="w-6 h-6" />
               </button>
 
               <div 
                 id="row-motion3d" 
-                className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 scroll-snap-x scrollbar-none"
+                className="flex items-center gap-5 sm:gap-6 overflow-x-auto no-scrollbar py-2 px-4 sm:px-12 scroll-snap-x scrollbar-none w-full"
               >
                 {motion3dCourses.map((course, idx) => (
                   <div 
                     key={course.id || (course as any)._id || `motion3d-${idx}`} 
-                    className="w-48 sm:w-64 flex-shrink-0 transition-transform duration-300 hover:scale-105"
+                    className="w-[75vw] sm:w-[44vw] md:w-[30vw] lg:w-[calc((100vw-210px)/4.3)] flex-shrink-0 transition-transform duration-300 hover:scale-105"
                   >
                     <CourseCard course={course} />
                   </div>
@@ -404,10 +399,10 @@ export default function HomePage() {
 
               <button
                 onClick={() => scrollRow('row-motion3d', 'right')}
-                className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
                 aria-label="Scroll right"
               >
-                <ChevronRight className="w-8 h-8" />
+                <ChevronRight className="w-6 h-6" />
               </button>
             </div>
           </section>
@@ -415,28 +410,30 @@ export default function HomePage() {
 
         {/* Photography & Visual Arts Row */}
         {photoCourses.length > 0 && (
-          <section className="space-y-3 relative group/row">
-            <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
-              Photography, Portraiture & Visual Arts
-            </h2>
+          <section className="relative group/row py-6 sm:py-8 bg-white">
+            <div className="w-full bg-[#d33028] px-4 sm:px-12 py-2 sm:py-2.5 mb-4 flex items-center shadow-sm">
+              <h2 className="text-white font-bold text-sm sm:text-base tracking-wide flex items-center gap-2">
+                Photography, Portraiture & Visual Arts
+              </h2>
+            </div>
 
             <div className="relative">
               <button
                 onClick={() => scrollRow('row-photo', 'left')}
-                className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
                 aria-label="Scroll left"
               >
-                <ChevronLeft className="w-8 h-8" />
+                <ChevronLeft className="w-6 h-6" />
               </button>
 
               <div 
                 id="row-photo" 
-                className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 scroll-snap-x scrollbar-none"
+                className="flex items-center gap-5 sm:gap-6 overflow-x-auto no-scrollbar py-2 px-4 sm:px-12 scroll-snap-x scrollbar-none w-full"
               >
                 {photoCourses.map((course, idx) => (
                   <div 
                     key={course.id || (course as any)._id || `photo-${idx}`} 
-                    className="w-48 sm:w-64 flex-shrink-0 transition-transform duration-300 hover:scale-105"
+                    className="w-[75vw] sm:w-[44vw] md:w-[30vw] lg:w-[calc((100vw-210px)/4.3)] flex-shrink-0 transition-transform duration-300 hover:scale-105"
                   >
                     <CourseCard course={course} />
                   </div>
@@ -445,10 +442,10 @@ export default function HomePage() {
 
               <button
                 onClick={() => scrollRow('row-photo', 'right')}
-                className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
                 aria-label="Scroll right"
               >
-                <ChevronRight className="w-8 h-8" />
+                <ChevronRight className="w-6 h-6" />
               </button>
             </div>
           </section>
@@ -456,28 +453,30 @@ export default function HomePage() {
 
         {/* Music Production & Film Scoring Row */}
         {musicAudioCourses.length > 0 && (
-          <section className="space-y-3 relative group/row">
-            <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
-              Music Production, Film Scoring & Sound Engineering
-            </h2>
+          <section className="relative group/row py-6 sm:py-8 bg-white">
+            <div className="w-full bg-[#d33028] px-4 sm:px-12 py-2 sm:py-2.5 mb-4 flex items-center shadow-sm">
+              <h2 className="text-white font-bold text-sm sm:text-base tracking-wide flex items-center gap-2">
+                Music Production, Film Scoring & Sound Engineering
+              </h2>
+            </div>
 
             <div className="relative">
               <button
                 onClick={() => scrollRow('row-music', 'left')}
-                className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
                 aria-label="Scroll left"
               >
-                <ChevronLeft className="w-8 h-8" />
+                <ChevronLeft className="w-6 h-6" />
               </button>
 
               <div 
                 id="row-music" 
-                className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 scroll-snap-x scrollbar-none"
+                className="flex items-center gap-5 sm:gap-6 overflow-x-auto no-scrollbar py-2 px-4 sm:px-12 scroll-snap-x scrollbar-none w-full"
               >
                 {musicAudioCourses.map((course, idx) => (
                   <div 
                     key={course.id || (course as any)._id || `music-${idx}`} 
-                    className="w-48 sm:w-64 flex-shrink-0 transition-transform duration-300 hover:scale-105"
+                    className="w-[75vw] sm:w-[44vw] md:w-[30vw] lg:w-[calc((100vw-210px)/4.3)] flex-shrink-0 transition-transform duration-300 hover:scale-105"
                   >
                     <CourseCard course={course} />
                   </div>
@@ -486,10 +485,10 @@ export default function HomePage() {
 
               <button
                 onClick={() => scrollRow('row-music', 'right')}
-                className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
                 aria-label="Scroll right"
               >
-                <ChevronRight className="w-8 h-8" />
+                <ChevronRight className="w-6 h-6" />
               </button>
             </div>
           </section>
@@ -497,28 +496,30 @@ export default function HomePage() {
 
         {/* Creative Art Direction & Brand Systems Row */}
         {designArtCourses.length > 0 && (
-          <section className="space-y-3 relative group/row">
-            <h2 className="text-lg sm:text-xl font-bold text-white tracking-wide">
-              Creative Art Direction, Figma & Brand Systems
-            </h2>
+          <section className="relative group/row py-6 sm:py-8 bg-white">
+            <div className="w-full bg-[#d33028] px-4 sm:px-12 py-2 sm:py-2.5 mb-4 flex items-center shadow-sm">
+              <h2 className="text-white font-bold text-sm sm:text-base tracking-wide flex items-center gap-2">
+                Creative Art Direction, Figma & Brand Systems
+              </h2>
+            </div>
 
             <div className="relative">
               <button
                 onClick={() => scrollRow('row-designart', 'left')}
-                className="absolute left-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
                 aria-label="Scroll left"
               >
-                <ChevronLeft className="w-8 h-8" />
+                <ChevronLeft className="w-6 h-6" />
               </button>
 
               <div 
                 id="row-designart" 
-                className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 scroll-snap-x scrollbar-none"
+                className="flex items-center gap-5 sm:gap-6 overflow-x-auto no-scrollbar py-2 px-4 sm:px-12 scroll-snap-x scrollbar-none w-full"
               >
                 {designArtCourses.map((course, idx) => (
                   <div 
                     key={course.id || (course as any)._id || `designart-${idx}`} 
-                    className="w-48 sm:w-64 flex-shrink-0 transition-transform duration-300 hover:scale-105"
+                    className="w-[75vw] sm:w-[44vw] md:w-[30vw] lg:w-[calc((100vw-210px)/4.3)] flex-shrink-0 transition-transform duration-300 hover:scale-105"
                   >
                     <CourseCard course={course} />
                   </div>
@@ -527,10 +528,10 @@ export default function HomePage() {
 
               <button
                 onClick={() => scrollRow('row-designart', 'right')}
-                className="absolute right-0 top-0 bottom-0 z-40 w-12 bg-black/60 text-white hidden group-hover/row:flex items-center justify-center hover:bg-black/80 transition"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-40 w-11 h-11 rounded-full bg-white/95 text-zinc-900 shadow-xl hidden group-hover/row:flex items-center justify-center hover:bg-white hover:scale-110 transition border-none"
                 aria-label="Scroll right"
               >
-                <ChevronRight className="w-8 h-8" />
+                <ChevronRight className="w-6 h-6" />
               </button>
             </div>
           </section>
