@@ -110,8 +110,6 @@ export default function HomePage() {
 
         {/* Hero Content */}
         <div className="relative z-10 px-4 sm:px-12 max-w-2xl mt-12 space-y-4">
-         
-
           {/* Masterclass Title */}
           <div className="pt-2">
             <h1 className="text-3xl sm:text-5xl font-black italic tracking-tight text-black drop-shadow-sm">

@@ -35,6 +35,18 @@ export default function WatchLessonPage() {
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
 
+  useEffect(() => {
+    setQuizSubmitted(false);
+    setQuizAnswers({});
+  }, [currentLesson.id]);
+
+  const totalQuizQuestions = currentLesson.quiz?.questions.length || 0;
+  const quizCorrectCount = currentLesson.quiz?.questions.reduce((acc, q) => {
+    return acc + (quizAnswers[q.id] === q.correctOptionIndex ? 1 : 0);
+  }, 0) || 0;
+  const quizScorePercent = totalQuizQuestions > 0 ? Math.round((quizCorrectCount / totalQuizQuestions) * 100) : 0;
+  const isQuizPassed = quizScorePercent >= (currentLesson.quiz?.passingScorePercent || 70);
+
   // Right Column Active View ('curriculum' | 'overview' | 'discussion' | 'agent')
   type ActiveSection = 'curriculum' | 'overview' | 'discussion' | 'agent';
   const [activeSection, setActiveSection] = useState<ActiveSection>('curriculum');
@@ -210,9 +222,9 @@ export default function WatchLessonPage() {
       <div className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden">
         {/* Left Column: Video Theater Player & Tabs */}
         <div className="flex-1 flex flex-col overflow-y-auto min-h-0 bg-zinc-50/50">
-          {/* Theater Mode Video Container */}
-          <div className="relative aspect-video max-h-[62vh] w-full bg-black flex items-center justify-center border-b border-zinc-200 shadow-sm shrink-0">
-            {currentLesson.contentType === 'VIDEO' && (
+          {/* Dynamic Playing Window (Video Player, PDF Resource, or Interactive Assessment Window) */}
+          {currentLesson.contentType === 'VIDEO' && (
+            <div className="relative aspect-video max-h-[62vh] w-full bg-black flex items-center justify-center border-b border-zinc-200 shadow-sm shrink-0 overflow-hidden">
               <video
                 ref={videoRef}
                 src={currentLesson.videoUrl || course.previewVideoUrl || '/vidssave.com Visual Storytelling 101 480P.mp4'}
@@ -222,68 +234,219 @@ export default function WatchLessonPage() {
                 onEnded={handleVideoEnded}
                 className="w-full h-full object-contain"
               />
-            )}
+            </div>
+          )}
 
-            {currentLesson.contentType === 'PDF' && (
-              <div className="p-8 text-center space-y-4 max-w-md bg-white rounded-xl border border-zinc-200 shadow-sm">
-                <div className="w-16 h-16 bg-sky-50 text-sky-600 rounded-full flex items-center justify-center mx-auto border border-sky-200">
+          {currentLesson.contentType === 'PDF' && (
+            <div className="relative h-[55vh] min-h-[400px] max-h-[62vh] w-full bg-zinc-100/80 flex items-center justify-center border-b border-zinc-200 shadow-sm shrink-0 p-6">
+              <div className="p-8 text-center space-y-4 max-w-md bg-white rounded-2xl border border-zinc-200 shadow-sm">
+                <div className="w-16 h-16 bg-red-50 text-[#d33028] rounded-2xl flex items-center justify-center mx-auto border border-red-100 shadow-xs">
                   <FileText className="w-8 h-8" />
                 </div>
-                <h3 className="text-lg font-bold text-zinc-900">{currentLesson.title}</h3>
-                <p className="text-xs text-zinc-500">PDF Resource & Architecture Guide</p>
+                <div className="space-y-1">
+                  <h3 className="text-lg font-black text-zinc-900 tracking-tight">{currentLesson.title}</h3>
+                  <p className="text-xs text-zinc-500">Official Course PDF Resource & Reference Guide</p>
+                </div>
                 <a
                   href={currentLesson.pdfUrl || '#'}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 bg-[#d33028] hover:bg-[#b82720] text-white font-bold text-xs px-5 py-2.5 rounded-md transition"
+                  className="inline-flex items-center gap-2 bg-[#d33028] hover:bg-[#b82720] text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow-sm"
                 >
                   <Download className="w-4 h-4" />
                   <span>Download PDF Document</span>
                 </a>
               </div>
-            )}
+            </div>
+          )}
 
-            {currentLesson.contentType === 'QUIZ' && currentLesson.quiz && (
-              <div className="p-8 max-w-xl w-full space-y-6 bg-white border border-zinc-200 rounded-xl my-4 shadow-sm">
+          {currentLesson.contentType === 'QUIZ' && currentLesson.quiz && (
+            <div className="relative h-[60vh] min-h-[460px] max-h-[64vh] w-full bg-zinc-100/80 border-b border-zinc-200 flex flex-col shrink-0 overflow-hidden">
+              {/* 1. Assessment Header Bar */}
+              <div className="bg-white border-b border-zinc-200 px-6 py-3.5 flex items-center justify-between shrink-0 shadow-2xs">
                 <div className="flex items-center gap-3">
-                  <HelpCircle className="w-6 h-6 text-amber-500" />
+                  <div className="w-9 h-9 rounded-xl bg-[#d33028]/10 text-[#d33028] border border-[#d33028]/20 flex items-center justify-center shrink-0">
+                    <HelpCircle className="w-5 h-5" />
+                  </div>
                   <div>
-                    <h3 className="text-base font-bold text-zinc-900">{currentLesson.quiz.title}</h3>
-                    <p className="text-xs text-zinc-500">Passing Score: {currentLesson.quiz.passingScorePercent}%</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-[#d33028]/10 text-[#d33028] tracking-wider">
+                        Lesson Assessment
+                      </span>
+                      <span className="text-[11px] text-zinc-500 font-medium">
+                        Passing Score: {currentLesson.quiz.passingScorePercent}%
+                      </span>
+                    </div>
+                    <h2 className="text-sm sm:text-base font-black text-zinc-900 tracking-tight">
+                      {currentLesson.quiz.title}
+                    </h2>
                   </div>
                 </div>
 
-                <div className="space-y-4 text-xs">
-                  {currentLesson.quiz.questions.map((q: QuizQuestion, qIdx: number) => (
-                    <div key={q.id} className="space-y-2 p-3 bg-zinc-50 border border-zinc-200 rounded-md">
-                      <p className="font-semibold text-zinc-900">{qIdx + 1}. {q.question}</p>
-                      <div className="space-y-1 pl-2">
-                        {q.options.map((opt: string, optIdx: number) => (
-                          <label key={optIdx} className="flex items-center gap-2 text-zinc-700 hover:text-zinc-900 cursor-pointer py-1">
-                            <input
-                              type="radio"
-                              name={`q-${q.id}`}
-                              checked={quizAnswers[q.id] === optIdx}
-                              onChange={() => setQuizAnswers(prev => ({ ...prev, [q.id]: optIdx }))}
-                              className="accent-[#d33028]"
-                            />
-                            <span>{opt}</span>
-                          </label>
-                        ))}
+                <div className="flex items-center gap-3">
+                  <div className="text-right hidden sm:block">
+                    <p className="text-[11px] text-zinc-500 font-medium">
+                      {quizSubmitted ? 'Assessment Finished' : 'Progress'}
+                    </p>
+                    <p className="text-xs font-bold text-zinc-800">
+                      {Object.keys(quizAnswers).length} of {totalQuizQuestions} answered
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. Scrollable Questions List inside the Video Playing Section */}
+              <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-5 space-y-4 max-w-3xl w-full mx-auto">
+                {quizSubmitted && (
+                  <div className={`p-4 rounded-xl border flex items-center justify-between gap-4 ${
+                    isQuizPassed 
+                      ? 'bg-emerald-50 border-emerald-200 text-emerald-900' 
+                      : 'bg-amber-50 border-amber-200 text-amber-900'
+                  }`}>
+                    <div className="flex items-center gap-3">
+                      {isQuizPassed ? (
+                        <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
+                      ) : (
+                        <HelpCircle className="w-6 h-6 text-amber-600 shrink-0" />
+                      )}
+                      <div>
+                        <p className="font-bold text-sm">
+                          {isQuizPassed ? 'Assessment Completed! You passed.' : 'Assessment Completed — Passing score not met.'}
+                        </p>
+                        <p className="text-xs opacity-85">
+                          Score: {quizScorePercent}% ({quizCorrectCount}/{totalQuizQuestions} correct) • Required: {currentLesson.quiz.passingScorePercent}%
+                        </p>
                       </div>
                     </div>
-                  ))}
+                    <button
+                      onClick={() => {
+                        setQuizSubmitted(false);
+                        setQuizAnswers({});
+                      }}
+                      className="text-xs font-bold px-3 py-1.5 rounded-lg border border-current hover:bg-black/5 transition shrink-0"
+                    >
+                      Retake Quiz
+                    </button>
+                  </div>
+                )}
+
+                {currentLesson.quiz.questions.map((q: QuizQuestion, qIdx: number) => {
+                  const isAnswered = quizAnswers[q.id] !== undefined;
+                  const isCorrect = quizSubmitted && quizAnswers[q.id] === q.correctOptionIndex;
+                  const isWrong = quizSubmitted && isAnswered && !isCorrect;
+
+                  return (
+                    <div
+                      key={q.id}
+                      className={`p-5 bg-white rounded-xl border transition-all shadow-xs space-y-3.5 ${
+                        quizSubmitted
+                          ? isCorrect
+                            ? 'border-emerald-300 ring-1 ring-emerald-200'
+                            : isWrong
+                            ? 'border-red-300 ring-1 ring-red-200'
+                            : 'border-zinc-200'
+                          : 'border-zinc-200'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="font-bold text-zinc-900 text-sm leading-snug">
+                          <span className="text-[#d33028] font-black mr-2">{qIdx + 1}.</span>
+                          {q.question}
+                        </p>
+                        {quizSubmitted && (
+                          <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                            isCorrect ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                          }`}>
+                            {isCorrect ? 'Correct' : 'Incorrect'}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        {q.options.map((opt: string, optIdx: number) => {
+                          const isSelected = quizAnswers[q.id] === optIdx;
+                          const isTheCorrectOne = quizSubmitted && optIdx === q.correctOptionIndex;
+
+                          return (
+                            <label
+                              key={optIdx}
+                              className={`flex items-center gap-3 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
+                                quizSubmitted
+                                  ? isTheCorrectOne
+                                    ? 'bg-emerald-50/80 border-emerald-400 text-emerald-950 font-semibold'
+                                    : isSelected
+                                    ? 'bg-red-50/80 border-red-300 text-red-950 font-medium line-through'
+                                    : 'bg-zinc-50 border-zinc-200 text-zinc-500'
+                                  : isSelected
+                                  ? 'bg-[#d33028]/10 border-[#d33028] text-[#d33028] font-bold shadow-2xs'
+                                  : 'bg-zinc-50/70 border-zinc-200 text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 hover:border-zinc-300'
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name={`q-${q.id}`}
+                                checked={isSelected}
+                                disabled={quizSubmitted}
+                                onChange={() => setQuizAnswers(prev => ({ ...prev, [q.id]: optIdx }))}
+                                className="accent-[#d33028] w-4 h-4 cursor-pointer"
+                              />
+                              <span className="leading-relaxed">{opt}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+
+                      {quizSubmitted && q.explanation && (
+                        <div className="pt-2 text-[11px] text-zinc-600 bg-zinc-50 p-2.5 rounded-lg border border-zinc-200 leading-relaxed">
+                          <span className="font-bold text-zinc-800">Explanation: </span>
+                          {q.explanation}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* 3. Sticky Assessment Footer inside the Playing Section */}
+              <div className="bg-white border-t border-zinc-200 px-6 py-3.5 flex items-center justify-between shrink-0 shadow-sm">
+                <div className="text-xs text-zinc-600 font-medium">
+                  {quizSubmitted ? (
+                    <span className="font-bold text-zinc-900">
+                      Status: {isQuizPassed ? 'Passed ✓' : 'Needs Review'}
+                    </span>
+                  ) : (
+                    <span>
+                      Answered <strong className="text-zinc-900">{Object.keys(quizAnswers).length}</strong> of{' '}
+                      <strong className="text-zinc-900">{totalQuizQuestions}</strong> questions
+                    </span>
+                  )}
                 </div>
 
-                <button
-                  onClick={handleQuizSubmit}
-                  className="w-full bg-[#d33028] hover:bg-[#b82720] text-white font-bold py-2.5 rounded-md transition text-xs"
-                >
-                  {quizSubmitted ? 'Assessment Submitted ✓' : 'Submit Quiz Answers'}
-                </button>
+                {!quizSubmitted ? (
+                  <button
+                    onClick={handleQuizSubmit}
+                    disabled={Object.keys(quizAnswers).length === 0}
+                    className="bg-[#d33028] hover:bg-[#b82720] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs px-6 py-2.5 rounded-xl transition shadow-sm flex items-center gap-2"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Submit Quiz Answers</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      if (nextLesson) {
+                        window.location.href = `/watch/${course.slug}/${nextLesson.id}`;
+                      }
+                    }}
+                    className="bg-zinc-900 hover:bg-black text-white font-bold text-xs px-6 py-2.5 rounded-xl transition shadow-sm flex items-center gap-2"
+                  >
+                    <span>Continue to Next Lesson</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Attached Video Details & Description Section (Directly below video) */}
           <div className="bg-white border-b border-zinc-200 px-4 sm:px-8 py-5 sm:py-6 space-y-3 shrink-0 shadow-xs">
@@ -311,69 +474,73 @@ export default function WatchLessonPage() {
             </p>
           </div>
 
-          {/* All buttons in the left side bottom in a single row */}
-          <div className="border-t border-b border-zinc-200 px-4 sm:px-8 py-3.5 bg-zinc-50/80 flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
+          {/* Bottom Bar: Red background with White buttons */}
+          <div className="border-t border-[#b82720] border-b border-[#b82720] px-4 sm:px-8 py-3.5 bg-[#d33028] flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0 shadow-sm">
             {/* Button 1: Course Curriculum */}
             <button
               onClick={() => setActiveSection('curriculum')}
-              className={`px-4 sm:px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 text-xs font-bold ${
+              className={`px-4 sm:px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 text-xs font-bold shadow-sm ${
                 activeSection === 'curriculum'
-                  ? 'bg-[#d33028] text-white shadow-sm ring-2 ring-[#d33028]/20'
-                  : 'bg-white hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 border border-zinc-200/90 shadow-2xs'
+                  ? 'bg-white text-[#d33028] shadow-md scale-[1.02]'
+                  : 'bg-white text-zinc-800 hover:text-black hover:bg-zinc-50 hover:scale-[1.01]'
               }`}
             >
-              <BookOpen className="w-4 h-4" />
+              <BookOpen className={`w-4 h-4 ${activeSection === 'curriculum' ? 'text-[#d33028]' : 'text-zinc-600'}`} />
               <span>Course Curriculum</span>
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
-                activeSection === 'curriculum' ? 'bg-white/20 text-white' : 'bg-zinc-100 text-zinc-600 border border-zinc-200'
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                activeSection === 'curriculum' ? 'bg-[#d33028]/10 text-[#d33028]' : 'bg-zinc-100 text-zinc-700'
               }`}>
                 {completedCount}/{allLessons.length}
               </span>
+              {activeSection === 'curriculum' && <span className="w-1.5 h-1.5 rounded-full bg-[#d33028] flex-shrink-0" />}
             </button>
 
             {/* Button 2: Overview & Notes */}
             <button
               onClick={() => setActiveSection('overview')}
-              className={`px-4 sm:px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 text-xs font-bold ${
+              className={`px-4 sm:px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 text-xs font-bold shadow-sm ${
                 activeSection === 'overview'
-                  ? 'bg-[#d33028] text-white shadow-sm ring-2 ring-[#d33028]/20'
-                  : 'bg-white hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 border border-zinc-200/90 shadow-2xs'
+                  ? 'bg-white text-[#d33028] shadow-md scale-[1.02]'
+                  : 'bg-white text-zinc-800 hover:text-black hover:bg-zinc-50 hover:scale-[1.01]'
               }`}
             >
-              <FileText className="w-4 h-4" />
+              <FileText className={`w-4 h-4 ${activeSection === 'overview' ? 'text-[#d33028]' : 'text-zinc-600'}`} />
               <span>Overview & Notes</span>
+              {activeSection === 'overview' && <span className="w-1.5 h-1.5 rounded-full bg-[#d33028] flex-shrink-0" />}
             </button>
 
             {/* Button 3: Lesson Discussion */}
             <button
               onClick={() => setActiveSection('discussion')}
-              className={`px-4 sm:px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 text-xs font-bold ${
+              className={`px-4 sm:px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 text-xs font-bold shadow-sm ${
                 activeSection === 'discussion'
-                  ? 'bg-[#d33028] text-white shadow-sm ring-2 ring-[#d33028]/20'
-                  : 'bg-white hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 border border-zinc-200/90 shadow-2xs'
+                  ? 'bg-white text-[#d33028] shadow-md scale-[1.02]'
+                  : 'bg-white text-zinc-800 hover:text-black hover:bg-zinc-50 hover:scale-[1.01]'
               }`}
             >
-              <MessageSquare className="w-4 h-4" />
+              <MessageSquare className={`w-4 h-4 ${activeSection === 'discussion' ? 'text-[#d33028]' : 'text-zinc-600'}`} />
               <span>Lesson Discussion</span>
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
-                activeSection === 'discussion' ? 'bg-white/20 text-white' : 'bg-zinc-100 text-zinc-600 border border-zinc-200'
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                activeSection === 'discussion' ? 'bg-[#d33028]/10 text-[#d33028]' : 'bg-zinc-100 text-zinc-700'
               }`}>
                 {qaList.length}
               </span>
+              {activeSection === 'discussion' && <span className="w-1.5 h-1.5 rounded-full bg-[#d33028] flex-shrink-0" />}
             </button>
 
             {/* Button 4: AI Study Buddy */}
             <button
               onClick={() => handleOpenAgentChat()}
-              className={`px-4 sm:px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 text-xs font-bold ${
+              className={`px-4 sm:px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 text-xs font-bold shadow-sm ${
                 activeSection === 'agent'
-                  ? 'bg-[#d33028] text-white shadow-sm ring-2 ring-[#d33028]/20'
-                  : 'bg-white hover:bg-[#d33028]/10 text-zinc-700 hover:text-[#d33028] border border-zinc-200/90 shadow-2xs'
+                  ? 'bg-white text-[#d33028] shadow-md scale-[1.02]'
+                  : 'bg-white text-zinc-800 hover:text-black hover:bg-zinc-50 hover:scale-[1.01]'
               }`}
             >
               <img src="/IMG_2796.PNG" alt="AI Agent" className="w-4 h-4 object-contain" />
               <span>AI Study Buddy</span>
               <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+              {activeSection === 'agent' && <span className="w-1.5 h-1.5 rounded-full bg-[#d33028] flex-shrink-0" />}
             </button>
           </div>
         </div>

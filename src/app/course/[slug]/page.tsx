@@ -108,7 +108,7 @@ export default function CourseDetailsPage() {
       {/* Main Content & Sidebar Grid (60% / 40%) */}
       <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 mt-10 grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-10 items-start">
         {/* Left Column: Single Container for all Details & Curriculum (60% width) */}
-        <div className="lg:col-span-3 bg-white border border-zinc-200 p-6 sm:p-8 rounded-xl shadow-sm space-y-8">
+        <div className="lg:col-span-3 bg-white border border-zinc-200 p-6 sm:p-8 rounded-xl shadow-sm space-y-8 overflow-hidden">
           {/* What You Will Learn */}
           <div className="space-y-4">
             <h2 className="text-lg sm:text-xl font-bold text-zinc-900">What You'll Learn</h2>
@@ -184,21 +184,19 @@ export default function CourseDetailsPage() {
             </div>
           </div>
 
-          <hr className="border-zinc-200" />
-
-          {/* Instructor Bio */}
-          <div className="space-y-4">
-            <h2 className="text-lg sm:text-xl font-bold text-zinc-900">Instructor Profile</h2>
+          {/* Instructor Bio with Full-Width Red Background (flushed to sides and bottom) */}
+          <div className="-mx-6 sm:-mx-8 -mb-6 sm:-mb-8 p-6 sm:p-8 bg-[#d33028] text-white rounded-b-xl space-y-4">
+            <h2 className="text-lg sm:text-xl font-bold text-white">Instructor Profile</h2>
             <div className="flex gap-4 items-start">
               <img
                 src={course.instructorAvatar}
                 alt={course.instructorName}
-                className="w-14 h-14 rounded-full object-cover border border-zinc-200"
+                className="w-14 h-14 rounded-full object-cover border-2 border-white/90 shadow-md shrink-0"
               />
               <div className="space-y-1">
-                <h3 className="font-bold text-zinc-900 text-base">{course.instructorName}</h3>
-                <p className="text-xs text-[#d33028] font-medium">{course.instructorTitle}</p>
-                <p className="text-xs text-zinc-600 pt-1 leading-relaxed">
+                <h3 className="font-bold text-white text-base">{course.instructorName}</h3>
+                <p className="text-xs text-white/90 font-medium">{course.instructorTitle}</p>
+                <p className="text-xs text-white/85 pt-1 leading-relaxed">
                   Senior Full-Stack Engineer & Educator with 10+ years experience training over 50,000 developers worldwide.
                 </p>
               </div>
