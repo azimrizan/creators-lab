@@ -106,7 +106,7 @@ export default function Navbar() {
                 alt="Creators Lab Logo"
                 width={200}
                 height={103}
-                className="h-[66px] sm:h-[92px] w-auto -my-3 -ml-3 sm:-ml-[22px]"
+                className="h-[54px] min-[380px]:h-[66px] sm:h-[92px] w-auto -my-3 -ml-3 sm:-ml-[22px]"
                 loading="eager"
               />
             </Link>
@@ -157,7 +157,7 @@ export default function Navbar() {
               )}
             </div>
 
-            <Link href="/wishlist" className={iconButton} aria-label="Wishlist">
+            <Link href="/wishlist" className={`${iconButton} max-[379px]:hidden`} aria-label="Wishlist">
               <Heart className="w-[22px] h-[22px]" />
               {wishlistCourseIds.length > 0 && (
                 <span className={countBadge}>{wishlistCourseIds.length}</span>
@@ -204,7 +204,7 @@ export default function Navbar() {
             {isGuest ? (
               <button
                 onClick={() => setIsAuthOpen(true)}
-                className="btn-soft ml-1 sm:ml-2 text-[15px] font-semibold px-5 sm:px-7 h-11 sm:h-12 rounded-full flex items-center gap-2"
+                className="btn-soft ml-1 sm:ml-2 text-sm sm:text-[15px] font-semibold px-4 sm:px-7 h-10 sm:h-12 rounded-full flex items-center gap-2 whitespace-nowrap shrink-0"
               >
                 <UserIcon className="w-4 h-4" />
                 <span>Sign In</span>

@@ -113,8 +113,8 @@ export default function CheckpointOverlay({ checkpoint, checkpointNumber, totalC
   const onChoose = followUp ? submitFollowUp : submit;
 
   return (
-    <div className="absolute inset-0 z-30 bg-[#17142B]/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6">
-      <div role="dialog" aria-label="Checkpoint question" className="w-full max-w-xl max-h-full overflow-y-auto bg-white rounded-3xl p-5 sm:p-6 shadow-2xl">
+    <div className="fixed lg:absolute inset-0 z-[60] lg:z-30 bg-[#17142B]/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-3 sm:p-6">
+      <div role="dialog" aria-label="Checkpoint question" className="w-full max-w-xl max-h-[85vh] lg:max-h-full overflow-y-auto bg-white rounded-3xl p-5 sm:p-6 shadow-2xl">
         <div className="flex items-center justify-between gap-3">
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-[0.1em] text-ink-muted uppercase">
             <Sparkles className="w-3.5 h-3.5" />

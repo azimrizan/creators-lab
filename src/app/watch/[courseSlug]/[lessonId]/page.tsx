@@ -169,6 +169,10 @@ export default function WatchLessonPage() {
     if (video) {
       video.pause();
       if (video.currentTime > checkpoint.atSec + 1) video.currentTime = checkpoint.atSec;
+      // Fullscreen video hides the questions: leave it (iOS uses its own fullscreen API).
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      const iosVideo = video as HTMLVideoElement & { webkitDisplayingFullscreen?: boolean; webkitExitFullscreen?: () => void };
+      if (iosVideo.webkitDisplayingFullscreen) iosVideo.webkitExitFullscreen?.();
     }
     checkpointOpenRef.current = true;
     setActiveCheckpointId(checkpoint.id);
@@ -309,7 +313,7 @@ export default function WatchLessonPage() {
   };
 
   return (
-    <div className="h-screen max-h-screen bg-white text-zinc-900 flex flex-col pt-[72px] sm:pt-[88px] font-sans overflow-hidden">
+    <div className="min-h-screen lg:h-screen lg:max-h-screen bg-white text-zinc-900 flex flex-col pt-[72px] sm:pt-[88px] font-sans lg:overflow-hidden">
       {/* Top Header / Player Controls */}
       <header className="h-14 sm:h-16 bg-white border-b border-zinc-200 px-4 sm:px-6 flex items-center justify-between text-xs z-20 shrink-0 shadow-sm">
         {/* Left: Back & Course Hierarchy */}
@@ -395,16 +399,17 @@ export default function WatchLessonPage() {
       </header>
 
       {/* Main Integrated Theater Grid */}
-      <div className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col lg:flex-row lg:overflow-hidden">
         {/* Left Column: Video Theater Player & Tabs */}
-        <div className="flex-1 flex flex-col overflow-y-auto min-h-0 bg-zinc-50/50">
+        <div className="max-lg:contents lg:flex-1 flex flex-col lg:overflow-y-auto lg:min-h-0 bg-zinc-50/50">
           {/* Dynamic Playing Window (Video Player, PDF Resource, or Interactive Assessment Window) */}
           {currentLesson.contentType === 'VIDEO' && (
-            <div className="relative aspect-video max-h-[62vh] w-full bg-black flex items-center justify-center border-b border-zinc-200 shadow-sm shrink-0 overflow-hidden">
+            <div className="sticky top-[72px] sm:top-[88px] z-30 lg:relative lg:top-auto lg:z-auto aspect-video max-h-[62vh] w-full bg-black flex items-center justify-center border-b border-zinc-200 shadow-sm shrink-0 overflow-hidden">
               <video
                 ref={videoRef}
                 src={lessonVideoUrl}
                 controls
+                playsInline
                 autoPlay
                 onTimeUpdate={handleTimeUpdate}
                 onSeeked={handleSeeked}
@@ -743,7 +748,7 @@ export default function WatchLessonPage() {
         </div>
 
         {/* Right Integrated Column: Dynamic Content Panel (opens clicked section) */}
-        <div className="w-full lg:w-[420px] xl:w-[480px] bg-white border-l border-zinc-200 flex flex-col flex-shrink-0 h-full min-h-0 overflow-hidden shadow-sm">
+        <div className="w-full lg:w-[420px] xl:w-[480px] bg-white border-t lg:border-t-0 lg:border-l border-zinc-200 flex flex-col flex-shrink-0 h-[75vh] lg:h-full min-h-0 overflow-hidden shadow-sm">
           {/* 1. Course Curriculum View */}
           {activeSection === 'curriculum' && (
             <div className="flex-1 flex flex-col overflow-hidden">
