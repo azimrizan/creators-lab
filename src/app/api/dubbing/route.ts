@@ -4,8 +4,9 @@ import { findCourse, findLesson } from '@/lib/courses';
 import { canManageCourse } from '@/lib/agents/courseBuilder';
 import { deleteDub, getDubbingInfo, queueDub } from '@/lib/dubbing/pipeline';
 
-// The dubbing job runs after the response; long lessons take several minutes.
-export const maxDuration = 800;
+// The dubbing job runs after the response and must finish within the function's time limit.
+// 300 seconds is the most Vercel's Hobby plan allows; a 15-minute lesson takes about 1-3 minutes.
+export const maxDuration = 300;
 
 /** ?video=<lesson video URL> → the audio languages and subtitles available for it. */
 export async function GET(request: Request) {
@@ -40,7 +41,8 @@ export async function POST(request: Request) {
       videoUrl: lesson.videoUrl,
       language,
       voice: body.voice === 'female' ? 'female' : 'male',
-      userKey: caller.userKey
+      userKey: caller.userKey,
+      origin: new URL(request.url).origin
     });
     after(job);
     return NextResponse.json({ success: true, ...(await getDubbingInfo(lesson.videoUrl)) });

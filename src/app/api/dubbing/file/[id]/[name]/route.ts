@@ -1,16 +1,16 @@
 import { createReadStream, promises as fs } from 'fs';
 import { Readable } from 'stream';
-import { dubFilePath } from '@/lib/dubbing/pipeline';
+import { localAudioPath } from '@/lib/dubbing/storage';
 
-/** Serves a generated dub track or subtitle file, with Range support so the player can seek. */
+/** Serves a locally stored dub track (development; on Vercel tracks come from Blob), with Range support so the player can seek. */
 export async function GET(request: Request, { params }: { params: Promise<{ id: string; name: string }> }) {
   const { id, name } = await params;
-  const file = dubFilePath(id, name);
+  const file = localAudioPath(id, name);
   const stat = file ? await fs.stat(file).catch(() => null) : null;
   if (!file || !stat) return new Response('Not found', { status: 404 });
 
   const headers: Record<string, string> = {
-    'Content-Type': name.endsWith('.vtt') ? 'text/vtt; charset=utf-8' : 'audio/mp4',
+    'Content-Type': 'audio/mp4',
     'Accept-Ranges': 'bytes',
     'Cache-Control': 'public, max-age=3600'
   };

@@ -1,3 +1,4 @@
+import os from 'os';
 import path from 'path';
 import { promises as fs } from 'fs';
 import { createHash } from 'crypto';
@@ -5,10 +6,12 @@ import { spawn } from 'child_process';
 import ffmpegStatic from 'ffmpeg-static';
 import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
 import Transcript from '@/models/Transcript';
+import DubTrack, { IDubTrackDocument } from '@/models/DubTrack';
 import { connectToDatabase } from '@/lib/mongodb';
-import { AIUnavailableError, chatJSON, transcribe } from '@/lib/ai/groq';
+import { AIUnavailableError, chatJSON, transcribe, TRANSCRIBE_MODEL } from '@/lib/ai/groq';
 import { ApiError, fence, UNTRUSTED_DATA_RULE } from '@/lib/ai/guard';
-import { DubbingInfo, DubStatus, DubTrack, DubVoice, findDubLanguage } from './languages';
+import { DubbingInfo, DubStatus, DubTrack as DubTrackInfo, DubVoice, findDubLanguage } from './languages';
+import { deleteAudio, saveAudio } from './storage';
 
 /**
  * Auto-dubbing: Whisper transcript (Groq) → line-by-line translation (Google Translate's free web
@@ -18,9 +21,11 @@ import { DubbingInfo, DubStatus, DubTrack, DubVoice, findDubLanguage } from './l
  * Every piece is free: translation and voices need no key or account, ffmpeg runs locally, and the
  * only Groq call (Whisper, once per video, cached) fits Groq's free plan. Set DUB_TRANSLATOR=groq to
  * translate with the Groq LLM instead (also sized for the free plan's ~8K tokens per minute).
+ *
+ * Job state and subtitles live in MongoDB and audio in storage.ts, so it works on serverless hosts
+ * where each request may hit a different instance and the local disk is temporary.
  */
 
-const STORAGE_DIR = process.env.DUB_STORAGE_DIR || path.join(process.cwd(), 'storage', 'dubs');
 const SAMPLE_RATE = 24000;
 // Speed a line up by at most this much to fit before the next line; beyond it the line spills over.
 const MAX_TEMPO = 1.6;
@@ -34,23 +39,15 @@ const GOOGLE_BATCH_CHARS = 3500;
 // On the free plan a long lesson hits the per-minute limit; the job waits it out instead of failing.
 const RATE_LIMIT_WAIT_MS = 65_000;
 const RATE_LIMIT_RETRIES = 6;
+// A running job updates its progress at least every few minutes; one silent for longer has died
+// (server restart or the host's time limit).
+const STALE_AFTER_MS = 10 * 60_000;
 
 interface Segment { start: number; end: number; text: string }
 interface CachedTranscript { language: string; durationSec: number; segments: Segment[] }
-type TrackState = Omit<DubTrack, 'audioUrl' | 'subtitlesUrl'>;
-
-// Jobs running in this server process; a status file left mid-job by a restart is reported as failed.
-const running = new Set<string>();
 
 export const mediaId = (videoUrl: string) => createHash('sha1').update(videoUrl).digest('hex').slice(0, 16);
-const mediaDir = (id: string) => path.join(STORAGE_DIR, id);
-const statusFile = (id: string, lang: string) => path.join(mediaDir(id), `track-${lang}.json`);
-
-/** Absolute path of a generated file, or null if the id/name is not one this module writes. */
-export function dubFilePath(id: string, name: string): string | null {
-  if (!/^[a-f0-9]{16}$/.test(id) || !/^([a-z]{2}|source)\.(m4a|vtt)$/.test(name)) return null;
-  return path.join(mediaDir(id), name);
-}
+const workDir = (id: string) => path.join(os.tmpdir(), 'creators-lab-dubs', id);
 
 function ffmpegBin(): string {
   return process.env.FFMPEG_PATH || ffmpegStatic || 'ffmpeg';
@@ -70,145 +67,145 @@ function runFfmpeg(args: string[], input?: Buffer): Promise<Buffer> {
   });
 }
 
-/** ffmpeg input for a lesson video: a file under /public, or an http(s) URL. */
-function resolveInput(videoUrl: string): string {
+/**
+ * ffmpeg input for a lesson video: the file under /public when it's on disk (local dev), otherwise
+ * its public URL (on Vercel, /public is served by the CDN and isn't in the function's filesystem).
+ */
+async function resolveInput(videoUrl: string, origin: string): Promise<string> {
   if (videoUrl.startsWith('/')) {
     const publicDir = path.join(process.cwd(), 'public');
     const filePath = path.resolve(publicDir, '.' + decodeURIComponent(videoUrl));
     if (!filePath.startsWith(publicDir + path.sep)) throw new ApiError(400, 'Invalid video path.');
-    return filePath;
+    if (await fs.stat(filePath).catch(() => null)) return filePath;
+    return origin + encodeURI(decodeURI(videoUrl));
   }
   if (/^https?:\/\//i.test(videoUrl)) return videoUrl;
   throw new ApiError(400, 'Unsupported video URL.');
 }
 
-async function readJson<T>(file: string): Promise<T | null> {
-  try {
-    return JSON.parse(await fs.readFile(file, 'utf8')) as T;
-  } catch {
-    return null;
-  }
+const isRunning = (doc: Pick<IDubTrackDocument, 'status' | 'updatedAt'>) =>
+  doc.status !== 'ready' && doc.status !== 'failed' && Date.now() - new Date(doc.updatedAt).getTime() < STALE_AFTER_MS;
+
+async function setTrack(mediaKey: string, language: string, patch: Partial<Pick<IDubTrackDocument, 'voice' | 'status' | 'progress' | 'error' | 'audioUrl' | 'subtitles'>>) {
+  await DubTrack.updateOne({ mediaKey, language }, { $set: patch }, { upsert: true });
 }
 
-async function writeStatus(id: string, lang: string, patch: Partial<TrackState>) {
-  const file = statusFile(id, lang);
-  const current = (await readJson<TrackState>(file)) || { language: lang, voice: 'male', status: 'queued', progress: 0, updatedAt: '' };
-  const next = { ...current, ...patch, updatedAt: new Date().toISOString() };
-  await fs.mkdir(mediaDir(id), { recursive: true });
-  await fs.writeFile(file, JSON.stringify(next));
-}
+const subtitlesUrl = (videoUrl: string, lang: string, version: string | number) =>
+  `/api/dubbing/subtitles?video=${encodeURIComponent(videoUrl)}&lang=${lang}&v=${version}`;
 
-/** Every track generated (or being generated) for a video. */
+/** Every track generated (or being generated) for a video. Empty when the database is unavailable. */
 export async function getDubbingInfo(videoUrl: string): Promise<DubbingInfo> {
-  const id = mediaId(videoUrl);
-  const dir = mediaDir(id);
-  const files = await fs.readdir(dir).catch(() => [] as string[]);
-  const tracks: DubTrack[] = [];
-  for (const name of files) {
-    const match = name.match(/^track-([a-z]{2})\.json$/);
-    if (!match) continue;
-    const state = await readJson<TrackState>(path.join(dir, name));
-    if (!state) continue;
-    const inFlight = state.status !== 'ready' && state.status !== 'failed';
-    if (inFlight && !running.has(`${id}:${match[1]}`)) {
-      Object.assign(state, { status: 'failed', error: 'Interrupted by a server restart. Start it again.' });
-    }
-    const v = encodeURIComponent(state.updatedAt);
-    tracks.push({
-      ...state,
-      ...(state.status === 'ready' && {
-        audioUrl: `/api/dubbing/file/${id}/${state.language}.m4a?v=${v}`,
-        subtitlesUrl: `/api/dubbing/file/${id}/${state.language}.vtt?v=${v}`
-      })
-    });
+  try {
+    await connectToDatabase();
+  } catch {
+    return { sourceLanguage: 'en', tracks: [] };
   }
-  const transcript = await readJson<CachedTranscript>(path.join(dir, 'transcript.json'));
-  const hasSource = files.includes('source.vtt');
+  const [docs, transcript] = await Promise.all([
+    DubTrack.find({ mediaKey: videoUrl }).select('-subtitles').lean<IDubTrackDocument[]>(),
+    Transcript.findOne({ mediaKey: videoUrl }).select('language').lean<{ language: string }>()
+  ]);
+  const tracks: DubTrackInfo[] = docs.map(doc => {
+    const failedSilently = doc.status !== 'ready' && doc.status !== 'failed' && !isRunning(doc);
+    const version = new Date(doc.updatedAt).getTime();
+    return {
+      language: doc.language,
+      voice: doc.voice,
+      status: failedSilently ? 'failed' : doc.status,
+      progress: doc.progress,
+      error: failedSilently ? 'Stopped before finishing. Start it again.' : doc.error || undefined,
+      updatedAt: new Date(doc.updatedAt).toISOString(),
+      ...(doc.status === 'ready' && doc.audioUrl && { audioUrl: doc.audioUrl, subtitlesUrl: subtitlesUrl(videoUrl, doc.language, version) })
+    };
+  });
   return {
     sourceLanguage: transcript?.language || 'en',
-    ...(hasSource && { sourceSubtitlesUrl: `/api/dubbing/file/${id}/source.vtt` }),
+    ...(transcript && { sourceSubtitlesUrl: subtitlesUrl(videoUrl, 'source', 1) }),
     tracks: tracks.sort((a, b) => a.language.localeCompare(b.language))
   };
 }
 
+/** WebVTT subtitles for a video: lang "source" is the original transcript, otherwise a dubbed language. */
+export async function getSubtitles(videoUrl: string, lang: string): Promise<string | null> {
+  await connectToDatabase();
+  if (lang === 'source') {
+    const transcript = await Transcript.findOne({ mediaKey: videoUrl }).lean<CachedTranscript>();
+    return transcript?.segments?.length ? toVtt(transcript.segments, transcript.segments.map(s => s.text)) : null;
+  }
+  const doc = await DubTrack.findOne({ mediaKey: videoUrl, language: lang, status: 'ready' }).select('subtitles').lean<{ subtitles?: string }>();
+  return doc?.subtitles || null;
+}
+
 export async function deleteDub(videoUrl: string, lang: string) {
-  const id = mediaId(videoUrl);
-  if (running.has(`${id}:${lang}`)) throw new ApiError(409, 'This track is still being generated.');
-  await Promise.all(
-    [statusFile(id, lang), path.join(mediaDir(id), `${lang}.m4a`), path.join(mediaDir(id), `${lang}.vtt`)].map(f => fs.rm(f, { force: true }))
-  );
+  const doc = await DubTrack.findOne({ mediaKey: videoUrl, language: lang }).lean<IDubTrackDocument>();
+  if (!doc) return;
+  if (isRunning(doc)) throw new ApiError(409, 'This track is still being generated.');
+  await deleteAudio(doc.audioUrl);
+  await DubTrack.deleteOne({ mediaKey: videoUrl, language: lang });
 }
 
 /**
  * Validates the request and marks the track queued. Returns the job to run after the response
- * is sent (it takes minutes), or throws if the language is unknown or already being generated.
+ * is sent (it takes a few minutes), or throws if the language is unknown or already being generated.
+ * `origin` is the site's base URL, used to fetch videos that aren't on this server's disk.
  */
-export async function queueDub(opts: { videoUrl: string; language: string; voice: DubVoice; userKey: string }): Promise<() => Promise<void>> {
+export async function queueDub(opts: { videoUrl: string; language: string; voice: DubVoice; userKey: string; origin: string }): Promise<() => Promise<void>> {
   const language = findDubLanguage(opts.language);
   if (!language) throw new ApiError(400, 'Unsupported language.');
-  const input = resolveInput(opts.videoUrl);
-  const id = mediaId(opts.videoUrl);
-  const key = `${id}:${language.code}`;
-  if (running.has(key)) throw new ApiError(409, `${language.label} is already being generated.`);
+  const input = await resolveInput(opts.videoUrl, opts.origin);
+  const mediaKey = opts.videoUrl;
+  const id = mediaId(mediaKey);
 
-  running.add(key);
-  await writeStatus(id, language.code, { voice: opts.voice, status: 'queued', progress: 0, error: undefined });
+  const existing = await DubTrack.findOne({ mediaKey, language: language.code }).lean<IDubTrackDocument>();
+  if (existing && isRunning(existing)) throw new ApiError(409, `${language.label} is already being generated.`);
+  await setTrack(mediaKey, language.code, { voice: opts.voice, status: 'queued', progress: 0, error: '' });
 
   return async () => {
-    const setStatus = (status: DubStatus, progress: number) => writeStatus(id, language.code, { status, progress });
+    const setStatus = (status: DubStatus, progress: number) => setTrack(mediaKey, language.code, { status, progress });
+    let outFile: string | null = null;
     try {
       await setStatus('transcribing', 2);
-      const transcript = await loadTranscript(opts.videoUrl, input, id, opts.userKey);
+      const transcript = await loadTranscript(mediaKey, input, id, opts.userKey);
       if (!transcript.segments.length) throw new ApiError(422, 'No speech was found in this video.');
 
       await setStatus('translating', 8);
       const onTranslateProgress = (p: number) => setStatus('translating', 8 + Math.round(p * 27));
+      // Google's free endpoint rate-limits busy IPs; when it refuses, translate with Groq instead.
+      const withGroq = () => translateSegments(transcript.segments, language.label, opts.userKey, onTranslateProgress);
       const translated = process.env.DUB_TRANSLATOR === 'groq'
-        ? await translateSegments(transcript.segments, language.label, opts.userKey, onTranslateProgress)
-        : await translateWithGoogle(transcript.segments, language.code, onTranslateProgress);
+        ? await withGroq()
+        : await translateWithGoogle(transcript.segments, language.code, onTranslateProgress).catch(err => {
+          console.warn(`[dubbing] Google Translate unavailable (${err instanceof Error ? err.message : err}); using Groq`);
+          return withGroq();
+        });
 
       await setStatus('voicing', 35);
       const voiceTrack = await synthesizeTrack(transcript, translated, language.voices[opts.voice], p => setStatus('voicing', 35 + Math.round(p * 55)));
 
       await setStatus('mixing', 92);
-      await mixTrack(id, language.code, input, voiceTrack);
-      await fs.writeFile(path.join(mediaDir(id), `${language.code}.vtt`), toVtt(transcript.segments, translated));
-      await writeStatus(id, language.code, { status: 'ready', progress: 100, error: undefined });
+      outFile = await mixTrack(id, language.code, input, voiceTrack);
+      const audioUrl = await saveAudio(id, language.code, outFile);
+      await setTrack(mediaKey, language.code, { status: 'ready', progress: 100, error: '', audioUrl, subtitles: toVtt(transcript.segments, translated) });
+      if (existing?.audioUrl && existing.audioUrl !== audioUrl) await deleteAudio(existing.audioUrl);
     } catch (err) {
-      console.error(`[dubbing] ${language.code} failed for ${opts.videoUrl}`, err);
-      const message = err instanceof ApiError || err instanceof Error ? err.message : 'Dubbing failed.';
-      await writeStatus(id, language.code, { status: 'failed', error: message.slice(0, 300) }).catch(() => {});
+      console.error(`[dubbing] ${language.code} failed for ${mediaKey}`, err);
+      const message = err instanceof Error ? err.message : 'Dubbing failed.';
+      await setTrack(mediaKey, language.code, { status: 'failed', error: message.slice(0, 300) }).catch(() => {});
     } finally {
-      running.delete(key);
+      if (outFile) await fs.rm(outFile, { force: true }).catch(() => {});
     }
   };
 }
 
-/** Reuses the lesson's saved transcript when there is one; otherwise transcribes the audio. Cached per video. */
-async function loadTranscript(videoUrl: string, input: string, id: string, userKey: string): Promise<CachedTranscript> {
-  const cacheFile = path.join(mediaDir(id), 'transcript.json');
-  let transcript = await readJson<CachedTranscript>(cacheFile);
+/** Reuses the video's saved transcript (shared with AI Studio); otherwise transcribes the audio once and saves it. */
+async function loadTranscript(mediaKey: string, input: string, id: string, userKey: string): Promise<CachedTranscript> {
+  const saved = await Transcript.findOne({ mediaKey }).lean<CachedTranscript>();
+  if (saved?.segments?.length) return { language: saved.language, durationSec: saved.durationSec, segments: saved.segments };
 
-  if (!transcript && process.env.MONGODB_URI) {
-    try {
-      await connectToDatabase();
-      const saved = await Transcript.findOne({ mediaKey: videoUrl }).lean<CachedTranscript>();
-      if (saved?.segments?.length) transcript = { language: saved.language, durationSec: saved.durationSec, segments: saved.segments };
-    } catch {
-      // Fall through to transcribing directly.
-    }
-  }
-
-  if (!transcript) {
-    // Audio only, mono 32kbps: about 4KB per second, so even long lessons fit Whisper's upload limit.
-    const audio = await runFfmpeg(['-i', input, '-vn', '-ac', '1', '-ar', '16000', '-b:a', '32k', '-f', 'mp3', 'pipe:1']);
-    const result = await waitOutRateLimits(() => transcribe(new Blob([new Uint8Array(audio)]), 'lesson-audio.mp3', userKey));
-    transcript = { language: result.language, durationSec: result.duration, segments: result.segments.filter(s => s.text) };
-  }
-
-  await fs.mkdir(mediaDir(id), { recursive: true });
-  await fs.writeFile(cacheFile, JSON.stringify(transcript));
-  await fs.writeFile(path.join(mediaDir(id), 'source.vtt'), toVtt(transcript.segments, transcript.segments.map(s => s.text)));
+  // Audio only, mono 32kbps: about 4KB per second, so even long lessons fit Whisper's upload limit.
+  const audio = await runFfmpeg(['-i', input, '-vn', '-ac', '1', '-ar', '16000', '-b:a', '32k', '-f', 'mp3', 'pipe:1']);
+  const result = await waitOutRateLimits(() => transcribe(new Blob([new Uint8Array(audio)]), `${id}.mp3`, userKey));
+  const transcript = { language: result.language, durationSec: result.duration, segments: result.segments.filter(s => s.text) };
+  await Transcript.updateOne({ mediaKey }, { $set: { ...transcript, aiModel: TRANSCRIBE_MODEL } }, { upsert: true });
   return transcript;
 }
 
@@ -401,14 +398,15 @@ async function synthesizeTrack(transcript: CachedTranscript, lines: string[], vo
   return timeline;
 }
 
-/** Mixes the voice over the original soundtrack (ducked) and encodes AAC; falls back to voice only if the video has no audio. */
-async function mixTrack(id: string, lang: string, input: string, voicePcm: Buffer) {
-  const dir = mediaDir(id);
+/** Encodes the voice track to AAC in a temp folder (optionally over the ducked original soundtrack); returns the file path. */
+async function mixTrack(id: string, lang: string, input: string, voicePcm: Buffer): Promise<string> {
+  const dir = workDir(id);
+  await fs.mkdir(dir, { recursive: true });
   const rawFile = path.join(dir, `${lang}.voice.raw`);
-  const tmpOut = path.join(dir, `${lang}.tmp.m4a`);
+  const outFile = path.join(dir, `${lang}.m4a`);
   await fs.writeFile(rawFile, voicePcm);
   const voiceIn = ['-f', 's16le', '-ar', String(SAMPLE_RATE), '-ac', '1', '-i', rawFile];
-  const encode = ['-c:a', 'aac', '-b:a', '96k', '-movflags', '+faststart', '-y', tmpOut];
+  const encode = ['-c:a', 'aac', '-b:a', '96k', '-movflags', '+faststart', '-y', outFile];
   try {
     if (BACKGROUND_VOLUME > 0) {
       try {
@@ -426,10 +424,9 @@ async function mixTrack(id: string, lang: string, input: string, voicePcm: Buffe
     } else {
       await runFfmpeg([...voiceIn, '-ar', '44100', ...encode]);
     }
-    await fs.rename(tmpOut, path.join(dir, `${lang}.m4a`));
+    return outFile;
   } finally {
     await fs.rm(rawFile, { force: true });
-    await fs.rm(tmpOut, { force: true });
   }
 }
 

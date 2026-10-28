@@ -6,7 +6,17 @@ import User from '@/models/User';
 import Order from '@/models/Order';
 import { MOCK_COURSES } from '@/lib/mockData';
 
-export async function POST() {
+/**
+ * Wipes and re-seeds courses, users and orders. Allowed only in local development, or in production
+ * with an `x-seed-secret` header matching SEED_SECRET (leave SEED_SECRET unset to disable it there).
+ */
+export async function POST(request: Request) {
+  const secret = process.env.SEED_SECRET;
+  const allowed = process.env.NODE_ENV !== 'production' || (Boolean(secret) && request.headers.get('x-seed-secret') === secret);
+  if (!allowed) {
+    return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 });
+  }
+
   try {
     await connectToDatabase();
 
