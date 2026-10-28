@@ -185,7 +185,8 @@ export async function queueDub(opts: { videoUrl: string; language: string; voice
       outFile = await mixTrack(id, language.code, input, voiceTrack);
       const audioUrl = await saveAudio(id, language.code, outFile);
       await setTrack(mediaKey, language.code, { status: 'ready', progress: 100, error: '', audioUrl, subtitles: toVtt(transcript.segments, translated) });
-      if (existing?.audioUrl && existing.audioUrl !== audioUrl) await deleteAudio(existing.audioUrl);
+      // Local storage reuses the same file path (only the ?v= changes), so only delete a different location.
+      if (existing?.audioUrl && existing.audioUrl.split('?')[0] !== audioUrl.split('?')[0]) await deleteAudio(existing.audioUrl);
     } catch (err) {
       console.error(`[dubbing] ${language.code} failed for ${mediaKey}`, err);
       const message = err instanceof Error ? err.message : 'Dubbing failed.';
