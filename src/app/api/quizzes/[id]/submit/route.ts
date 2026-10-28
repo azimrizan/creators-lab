@@ -1,83 +1,66 @@
 import { NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import Attempt from '@/models/Attempt';
+import LessonProgress from '@/models/LessonProgress';
+import { getSessionUser } from '@/lib/auth';
+import { findCourse, allLessons } from '@/lib/courses';
+import { ApiError, errorResponse } from '@/lib/ai/guard';
 import { connectToDatabase } from '@/lib/mongodb';
-import Course from '@/models/Course';
-import User from '@/models/User';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-jwt-key-learnhub-2026-production';
-
+/** Grades a lesson quiz on the server (answers are never sent to the browser) and records the attempt. */
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: quizId } = await params;
-    const { answers, courseId, lessonId } = await request.json();
+    const { answers = {}, courseId, lessonId } = await request.json();
 
-    const cookieHeader = request.headers.get('cookie') || '';
-    const tokenMatch = cookieHeader.match(/token=([^;]+)/);
-    const token = tokenMatch ? tokenMatch[1] : null;
+    const course = await findCourse(String(courseId || ''));
+    if (!course) throw new ApiError(404, 'Course not found');
 
-    let userId = 'guest';
-    if (token) {
-      try {
-        const decoded: any = jwt.verify(token, JWT_SECRET);
-        userId = decoded.userId;
-      } catch (e) {}
-    }
+    const lesson = allLessons(course).find(l => l.quiz && (l.quiz.id === quizId || l.id === lessonId));
+    const quiz = lesson?.quiz;
+    if (!lesson || !quiz) throw new ApiError(404, 'Quiz not found');
 
-    await connectToDatabase();
-    const course = await Course.findById(courseId);
-
-    if (!course) {
-      return NextResponse.json({ success: false, error: 'Course not found' }, { status: 404 });
-    }
-
-    // Find quiz in curriculum tree
-    let targetQuiz: any = null;
-    for (const section of course.sections) {
-      for (const lesson of section.lessons) {
-        if (lesson.quiz && (lesson.quiz.id === quizId || lesson.id === lessonId)) {
-          targetQuiz = lesson.quiz;
-          break;
-        }
-      }
-    }
-
-    if (!targetQuiz) {
-      targetQuiz = {
-        passingScorePercent: 70,
-        questions: [
-          { id: 'q1', correctOptionIndex: 0, explanation: 'Mongoose provides strongly typed schema validation.' },
-          { id: 'q2', correctOptionIndex: 1, explanation: 'State-changing operations must use POST/PUT/DELETE.' }
-        ]
-      };
-    }
-
-    let correctCount = 0;
-    const questionResults: any[] = [];
-
-    targetQuiz.questions.forEach((q: any) => {
-      const userSelected = answers[q.id];
-      const isCorrect = userSelected === q.correctOptionIndex;
-      if (isCorrect) correctCount++;
-
-      questionResults.push({
+    const questionResults = quiz.questions.map(q => {
+      const selected = typeof answers[q.id] === 'number' ? answers[q.id] : -1;
+      return {
         questionId: q.id,
-        userSelected,
+        userSelected: selected,
         correctOptionIndex: q.correctOptionIndex,
-        isCorrect,
+        isCorrect: selected === q.correctOptionIndex,
         explanation: q.explanation
-      });
+      };
     });
 
-    const scorePercent = Math.round((correctCount / targetQuiz.questions.length) * 100);
-    const passed = scorePercent >= targetQuiz.passingScorePercent;
+    const correctCount = questionResults.filter(r => r.isCorrect).length;
+    const scorePercent = quiz.questions.length ? Math.round((correctCount / quiz.questions.length) * 100) : 0;
+    const passed = scorePercent >= quiz.passingScorePercent;
 
-    if (passed && userId !== 'guest') {
-      const dbUser = await User.findById(userId);
-      if (dbUser) {
-        if (!dbUser.enrolledCourseIds.includes(courseId)) {
-          dbUser.enrolledCourseIds.push(courseId);
+    const user = getSessionUser(request);
+    if (user) {
+      try {
+        await connectToDatabase();
+        await Attempt.insertMany(
+          quiz.questions.map((q, i) => ({
+            userId: user.userId,
+            courseSlug: course.slug,
+            lessonId: lesson.id,
+            kind: 'LESSON_QUIZ',
+            refId: `${quiz.id}:${q.id}:${Date.now()}`,
+            topic: quiz.title,
+            question: q.question,
+            correct: questionResults[i].isCorrect,
+            points: questionResults[i].isCorrect ? 1 : 0,
+            maxPoints: 1
+          }))
+        );
+        if (passed) {
+          await LessonProgress.updateOne(
+            { userId: user.userId, courseSlug: course.slug, lessonId: lesson.id },
+            { $set: { completed: true, completedAt: new Date() } },
+            { upsert: true }
+          );
         }
-        await dbUser.save();
+      } catch {
+        // Grading still works without the database; the attempt just isn't saved.
       }
     }
 
@@ -85,11 +68,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       success: true,
       scorePercent,
       passed,
+      passingScorePercent: quiz.passingScorePercent,
       correctCount,
-      totalQuestions: targetQuiz.questions.length,
+      totalQuestions: quiz.questions.length,
       questionResults
     });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error) {
+    return errorResponse(error);
   }
 }

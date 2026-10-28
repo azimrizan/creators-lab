@@ -54,10 +54,10 @@ function CoursesContent() {
   }, [courses, searchQuery, selectedCategory, selectedLevel, selectedRating, sortBy]);
 
   return (
-    <div className="bg-white min-h-screen pt-20 text-zinc-900 w-full">
-      <div className="flex flex-col lg:flex-row w-full min-h-[calc(100vh-5rem)]">
+    <div className="bg-white min-h-screen pt-[72px] sm:pt-[88px] text-zinc-900 w-full">
+      <div className="flex flex-col lg:flex-row w-full min-h-[calc(100vh-88px)]">
         {/* Left Menu Bar with Clean White Shade matching the right side */}
-        <aside className="w-full lg:w-72 xl:w-80 flex-shrink-0 bg-white border-b lg:border-b-0 lg:border-r border-zinc-200 p-6 lg:py-8 lg:px-5 lg:min-h-[calc(100vh-5rem)] lg:sticky lg:top-20 space-y-7">
+        <aside className="w-full lg:w-72 xl:w-80 flex-shrink-0 bg-white border-b lg:border-b-0 lg:border-r border-zinc-200 p-6 lg:py-8 lg:px-5 lg:min-h-[calc(100vh-88px)] lg:sticky lg:top-[88px] space-y-7">
           {/* Creative Disciplines Menu List */}
           <div className="space-y-3">
             <div className="divide-y divide-zinc-100">
@@ -66,7 +66,7 @@ function CoursesContent() {
                   onClick={() => setSelectedCategory('ALL')}
                   className={`w-full flex items-center justify-between text-left px-3.5 py-2.5 rounded-lg text-xs transition ${
                     selectedCategory === 'ALL'
-                      ? 'bg-[#d33028] text-white font-bold shadow-sm'
+                      ? 'btn-soft font-bold'
                       : 'text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 font-medium'
                   }`}
                 >
@@ -82,7 +82,7 @@ function CoursesContent() {
                       onClick={() => setSelectedCategory(cat.id)}
                       className={`w-full flex items-center justify-between text-left px-3.5 py-2.5 rounded-lg text-xs transition truncate ${
                         isSelected
-                          ? 'bg-[#d33028] text-white font-bold shadow-sm'
+                          ? 'btn-soft font-bold'
                           : 'text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 font-medium'
                       }`}
                     >

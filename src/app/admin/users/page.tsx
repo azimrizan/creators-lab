@@ -65,7 +65,7 @@ export default function AdminUsersPage() {
               placeholder="Search user by name or email..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full bg-white border border-zinc-300 rounded-md pl-10 pr-4 py-2 text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#d33028]"
+              className="w-full bg-white border border-zinc-300 rounded-md pl-10 pr-4 py-2 text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-brand"
             />
           </div>
         </div>
@@ -95,7 +95,7 @@ export default function AdminUsersPage() {
                       </div>
                     </td>
                     <td className="p-4 font-semibold text-zinc-900">{user.role}</td>
-                    <td className="p-4 font-bold text-[#d33028]">{user.enrolledCourseIds.length} Courses</td>
+                    <td className="p-4 font-bold text-brand">{user.enrolledCourseIds.length} Courses</td>
                     <td className="p-4">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
                         user.isBlocked
@@ -111,7 +111,7 @@ export default function AdminUsersPage() {
                         className="p-1.5 rounded bg-zinc-50 hover:bg-zinc-100 text-zinc-800 border border-zinc-300 transition"
                         title="View Deep Student Performance"
                       >
-                        <Eye className="w-4 h-4 text-[#d33028]" />
+                        <Eye className="w-4 h-4 text-brand" />
                       </button>
 
                       <button
@@ -156,7 +156,7 @@ export default function AdminUsersPage() {
 
               {/* Transactions */}
               <div className="space-y-2">
-                <h4 className="font-bold text-xs uppercase tracking-wider text-[#d33028]">Payment Order Records</h4>
+                <h4 className="font-bold text-xs uppercase tracking-wider text-brand">Payment Order Records</h4>
                 {getStudentOrders(selectedStudent.email).length === 0 ? (
                   <p className="text-xs text-zinc-500 italic p-3 bg-zinc-50 rounded-xl border border-zinc-200">No payment transaction records found.</p>
                 ) : (

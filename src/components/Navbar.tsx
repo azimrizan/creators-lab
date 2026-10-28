@@ -2,16 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { 
-  ShoppingBag, 
-  Heart, 
-  Search, 
-  Bell, 
-  User as UserIcon, 
-  BookOpen, 
-  ShieldCheck, 
-  LogOut, 
-  LayoutDashboard, 
+import { usePathname } from 'next/navigation';
+import {
+  ShoppingBag,
+  Heart,
+  Search,
+  Bell,
+  User as UserIcon,
+  BookOpen,
+  ShieldCheck,
+  LayoutDashboard,
   ChevronDown
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
@@ -19,7 +19,8 @@ import AuthModal from './AuthModal';
 import CartDrawer from './CartDrawer';
 
 export default function Navbar() {
-  const { currentUser, setCurrentUser, cartCourseIds, wishlistCourseIds, fetchCoursesFromApi, fetchOrdersFromApi } = useAppStore();
+  const pathname = usePathname();
+  const { currentUser, setCurrentUser, cartCourseIds, wishlistCourseIds, fetchCoursesFromApi, fetchOrdersFromApi, fetchCertificatesFromApi } = useAppStore();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -27,7 +28,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Scroll listener for standard transparent -> solid background
+  // Scroll listener for translucent -> solid background
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 30);
@@ -43,13 +44,14 @@ export default function Navbar() {
       .then(data => {
         if (data.success && data.user) {
           setCurrentUser(data.user);
+          fetchCertificatesFromApi();
         }
       })
       .catch(() => {});
 
     fetchCoursesFromApi();
     fetchOrdersFromApi();
-  }, [setCurrentUser, fetchCoursesFromApi, fetchOrdersFromApi]);
+  }, [setCurrentUser, fetchCoursesFromApi, fetchOrdersFromApi, fetchCertificatesFromApi]);
 
   const handleSignOut = async () => {
     try {
@@ -73,49 +75,67 @@ export default function Navbar() {
   const isInstructor = currentUser.role === 'INSTRUCTOR';
   const isAdmin = currentUser.role === 'SUPER_ADMIN' || currentUser.role === 'ADMIN';
 
+  const navLinks = [
+    { href: '/', label: 'Home' },
+    { href: '/courses', label: 'Browse Catalog' },
+    ...(!isGuest ? [{ href: '/my-learning', label: 'My Learning' }] : []),
+    { href: '/certificates', label: 'Certificates' }
+  ];
+
+  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname?.startsWith(href));
+
+  const iconButton = 'relative w-11 h-11 rounded-full flex items-center justify-center text-ink-body hover:bg-lavender hover:text-ink transition';
+  const countBadge = 'absolute top-0.5 right-0.5 min-w-4 h-4 px-1 bg-brand text-white text-[9px] font-bold rounded-full flex items-center justify-center ring-2 ring-white';
+
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-500 font-sans ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 font-sans backdrop-blur-md ${
           isScrolled
-            ? 'bg-white/95 border-b border-zinc-200 shadow-sm backdrop-blur-md'
-            : 'bg-white/90 backdrop-blur-md border-b border-zinc-100'
+            ? 'bg-white/70 backdrop-blur-xl border-b border-white/70 shadow-[0_10px_30px_-18px_rgba(79,70,229,0.35)]'
+            : 'bg-white/30 backdrop-blur-md border-b border-transparent'
         }`}
       >
-        <div className="max-w-[1800px] mx-auto px-4 sm:px-12 lg:px-16 h-16 sm:h-20 flex items-center justify-between gap-4">
-          
-          {/* Authentic Logo Branding + Navigation Links */}
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 h-[72px] sm:h-[88px] flex items-center justify-between gap-4">
+
+          {/* Logo + Navigation Links */}
           <div className="flex items-center gap-8 lg:gap-10">
-           <Link href="/" className="flex items-center">
+            <Link href="/" className="flex items-center shrink-0">
               <img
-                src="/Logo-Creators-Lab.png"          // Direct path relative to the public directory
+                src="/Logo-Creators-Lab.png"
                 alt="Creators Lab Logo"
-                width={160}              // Set intrinsic width
-                height={40}              // Set intrinsic height
-                className="h-8 w-auto sm:h-10" // Scales height responsively while keeping aspect ratio
+                width={200}
+                height={103}
+                className="h-[66px] sm:h-[92px] w-auto -my-3 -ml-3 sm:-ml-[22px]"
                 loading="eager"
               />
             </Link>
 
-            {/* Preserved Navigation Pages */}
-            <nav className="hidden md:flex items-center gap-5 text-xs sm:text-sm font-normal text-zinc-600">
-              <Link href="/" className="hover:text-[#d33028] font-semibold transition text-zinc-900">Home</Link>
-              <Link href="/courses" className="hover:text-[#d33028] transition">Browse Catalog</Link>
-              {!isGuest && (
-                <Link href="/my-learning" className="hover:text-[#d33028] transition">My Learning</Link>
-              )}
-              <Link href="/certificates" className="hover:text-[#d33028] transition">Certificates</Link>
+            <nav className="hidden md:flex items-center gap-8 text-[15px] font-medium">
+              {navLinks.map(link => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`relative py-2 transition ${
+                    isActive(link.href)
+                      ? 'text-ink font-semibold after:absolute after:left-0 after:right-0 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-brand'
+                      : 'text-ink-muted hover:text-ink'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
             </nav>
           </div>
 
-          {/* Right Action Icons (Search, Cart, Wishlist, Notifications & Profile Switcher) */}
-          <div className="flex items-center gap-4 sm:gap-6 text-zinc-700">
-            
+          {/* Right Actions */}
+          <div className="flex items-center gap-1 sm:gap-2">
+
             {/* Expandable Search Bar */}
             <div className="relative flex items-center">
               {isSearchOpen ? (
-                <div className="flex items-center bg-zinc-100 border border-zinc-300 px-2.5 py-1 rounded transition-all duration-300">
-                  <Search className="w-4 h-4 text-zinc-500 mr-2" />
+                <div className="glass flex items-center px-3.5 h-10 rounded-full transition-all duration-300">
+                  <Search className="w-4 h-4 text-ink-muted mr-2" />
                   <input
                     type="text"
                     placeholder="Search courses, skills..."
@@ -123,61 +143,46 @@ export default function Navbar() {
                     onChange={e => setSearchQuery(e.target.value)}
                     autoFocus
                     onBlur={() => !searchQuery && setIsSearchOpen(false)}
-                    className="bg-transparent text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none w-36 sm:w-56"
+                    className="bg-transparent text-sm text-ink placeholder:text-zinc-400 focus:outline-none w-32 sm:w-56"
                   />
                 </div>
               ) : (
                 <button
                   onClick={() => setIsSearchOpen(true)}
-                  className="p-1 hover:text-[#d33028] transition"
-                  title="Search"
+                  className={iconButton}
+                  aria-label="Search"
                 >
-                  <Search className="w-5 h-5" />
+                  <Search className="w-[22px] h-[22px]" />
                 </button>
               )}
             </div>
 
-            {/* Wishlist Button */}
-            <Link
-              href="/wishlist"
-              className="relative p-1 hover:text-[#d33028] transition"
-              title="Wishlist"
-            >
-              <Heart className="w-5 h-5" />
+            <Link href="/wishlist" className={iconButton} aria-label="Wishlist">
+              <Heart className="w-[22px] h-[22px]" />
               {wishlistCourseIds.length > 0 && (
-                <span className="absolute -top-1 -right-1.5 w-4 h-4 bg-[#d33028] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                  {wishlistCourseIds.length}
-                </span>
+                <span className={countBadge}>{wishlistCourseIds.length}</span>
               )}
             </Link>
 
-            {/* Cart Button */}
-            <button
-              onClick={() => setIsCartOpen(true)}
-              className="relative p-1 hover:text-[#d33028] transition"
-              title="Cart"
-            >
-              <ShoppingBag className="w-5 h-5" />
+            <button onClick={() => setIsCartOpen(true)} className={iconButton} aria-label="Cart">
+              <ShoppingBag className="w-[22px] h-[22px]" />
               {cartCourseIds.length > 0 && (
-                <span className="absolute -top-1 -right-1.5 w-4 h-4 bg-[#d33028] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                  {cartCourseIds.length}
-                </span>
+                <span className={countBadge}>{cartCourseIds.length}</span>
               )}
             </button>
 
-            {/* Notifications Bell */}
-            <button className="relative p-1 hover:text-[#d33028] transition hidden sm:block" title="Notifications">
-              <Bell className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#d33028] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                11
-              </span>
-            </button>
+            {!isGuest && (
+              <button className={`${iconButton} hidden sm:flex`} aria-label="Notifications">
+                <Bell className="w-[22px] h-[22px]" />
+                <span className={countBadge}>11</span>
+              </button>
+            )}
 
             {/* Instructor Studio Shortcut */}
             {isInstructor && (
               <Link
                 href="/instructor"
-                className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200 hidden sm:flex items-center gap-1.5 hover:bg-emerald-100 transition"
+                className="ml-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-2 rounded-full border border-emerald-200 hidden lg:flex items-center gap-1.5 hover:bg-emerald-100 transition"
               >
                 <LayoutDashboard className="w-3.5 h-3.5" />
                 <span>Instructor Studio</span>
@@ -188,7 +193,7 @@ export default function Navbar() {
             {isAdmin && (
               <Link
                 href="/admin"
-                className="text-xs font-semibold text-amber-800 bg-amber-50 px-2.5 py-1 rounded border border-amber-200 hidden sm:flex items-center gap-1.5 hover:bg-amber-100 transition"
+                className="ml-1 text-xs font-semibold text-amber-800 bg-amber-50 px-3 py-2 rounded-full border border-amber-200 hidden lg:flex items-center gap-1.5 hover:bg-amber-100 transition"
               >
                 <ShieldCheck className="w-3.5 h-3.5" />
                 <span>Admin Console</span>
@@ -199,43 +204,42 @@ export default function Navbar() {
             {isGuest ? (
               <button
                 onClick={() => setIsAuthOpen(true)}
-                className="bg-[#d33028] hover:bg-[#b82720] text-white text-xs font-bold px-4 py-1.5 rounded transition shadow flex items-center gap-1.5"
+                className="btn-soft ml-1 sm:ml-2 text-[15px] font-semibold px-5 sm:px-7 h-11 sm:h-12 rounded-full flex items-center gap-2"
               >
                 <UserIcon className="w-4 h-4" />
                 <span>Sign In</span>
               </button>
             ) : (
-              <div 
-                className="relative group"
+              <div
+                className="relative group ml-1"
                 onMouseEnter={() => setIsUserMenuOpen(true)}
                 onMouseLeave={() => setIsUserMenuOpen(false)}
               >
-                <button className="flex items-center gap-2 py-1">
+                <button className="flex items-center gap-1.5 p-1 rounded-full hover:bg-lavender transition" aria-label="Account menu">
                   <img
                     src={currentUser.avatar}
                     alt={currentUser.name}
-                    className="w-8 h-8 rounded object-cover border border-zinc-300"
+                    className="w-10 h-10 rounded-full object-cover ring-2 ring-lavender-line"
                   />
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-3.5 h-3.5 text-ink-muted transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* Profile Dropdown */}
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 top-full pt-2 w-56 z-50">
-                    <div className="bg-white border border-zinc-200 rounded shadow-xl py-2 space-y-1 text-xs text-zinc-700">
-                      
-                      {/* Current User Header */}
-                      <div className="px-3 py-2 border-b border-zinc-100 mb-1">
-                        <p className="font-bold text-zinc-900 truncate">{currentUser.name}</p>
-                        <p className="text-[11px] text-zinc-500 truncate">{currentUser.email}</p>
+                  <div className="absolute right-0 top-full pt-2 w-60 z-50">
+                    <div className="glass-strong rounded-2xl p-2 text-sm text-ink-body">
+
+                      <div className="px-3 py-2.5 border-b border-[#F0EEF6] mb-1">
+                        <p className="font-display font-semibold text-ink truncate">{currentUser.name}</p>
+                        <p className="text-xs text-ink-muted truncate">{currentUser.email}</p>
                       </div>
 
                       <Link
                         href="/my-learning"
                         onClick={() => setIsUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-3 py-2 hover:bg-zinc-50 hover:text-zinc-900 transition"
+                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-lavender hover:text-ink transition"
                       >
-                        <BookOpen className="w-4 h-4 text-[#d33028]" />
+                        <BookOpen className="w-4 h-4" />
                         <span>My Learning</span>
                       </Link>
 
@@ -243,7 +247,7 @@ export default function Navbar() {
                         <Link
                           href="/instructor"
                           onClick={() => setIsUserMenuOpen(false)}
-                          className="flex items-center gap-2 px-3 py-2 text-emerald-700 hover:bg-zinc-50 hover:text-emerald-800 transition"
+                          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-emerald-700 hover:bg-emerald-50 transition"
                         >
                           <LayoutDashboard className="w-4 h-4" />
                           <span>Instructor Studio</span>
@@ -254,18 +258,18 @@ export default function Navbar() {
                         <Link
                           href="/admin"
                           onClick={() => setIsUserMenuOpen(false)}
-                          className="flex items-center gap-2 px-3 py-2 text-amber-800 hover:bg-zinc-50 hover:text-amber-900 transition"
+                          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-amber-800 hover:bg-amber-50 transition"
                         >
                           <ShieldCheck className="w-4 h-4" />
                           <span>Admin Console</span>
                         </Link>
                       )}
 
-                      <div className="h-px bg-zinc-200 my-1" />
+                      <div className="h-px bg-[#F0EEF6] my-1" />
 
                       <button
                         onClick={handleSignOut}
-                        className="w-full text-center px-3 py-2 text-zinc-600 hover:bg-zinc-50 hover:text-red-600 transition font-semibold"
+                        className="w-full text-left px-3 py-2.5 rounded-xl text-ink-muted hover:bg-red-50 hover:text-red-600 transition font-semibold"
                       >
                         Sign out
                       </button>

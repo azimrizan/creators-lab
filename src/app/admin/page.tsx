@@ -42,10 +42,13 @@ export default function AdminDashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 pb-6">
           <div>
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-6 h-6 text-[#d33028]" />
+              <ShieldCheck className="w-6 h-6 text-brand" />
               <h1 className="text-3xl font-extrabold text-zinc-900">Admin Control Console</h1>
             </div>
             <p className="text-xs text-zinc-500">Live MongoDB Atlas aggregate metrics, editorial gatekeeping, user RBAC, and revenue logs</p>
+            <Link href="/instructor/ai-studio" className="inline-flex items-center gap-2 mt-2 h-10 px-4 rounded-full btn-soft text-sm font-semibold transition">
+              Open AI Studio: course content &amp; learning insights
+            </Link>
           </div>
 
           <div className="flex items-center gap-3">
@@ -59,7 +62,7 @@ export default function AdminDashboardPage() {
 
             <Link
               href="/admin/courses"
-              className="bg-[#d33028] hover:bg-[#b82720] text-white font-bold text-xs px-4 py-2.5 rounded-md flex items-center gap-2 transition shadow-md"
+              className="btn-soft font-bold text-xs px-4 py-2.5 rounded-md flex items-center gap-2 transition"
             >
               <PlusCircle className="w-4 h-4" />
               <span>Create & Manage Courses</span>
@@ -81,7 +84,7 @@ export default function AdminDashboardPage() {
           <div className="bg-zinc-50 border border-zinc-200 p-5 rounded-xl space-y-2 shadow-sm">
             <div className="flex items-center justify-between text-xs text-zinc-500">
               <span>Total Learning Modules</span>
-              <BookOpen className="w-4 h-4 text-[#d33028]" />
+              <BookOpen className="w-4 h-4 text-brand" />
             </div>
             <div className="text-2xl font-black text-zinc-900">{stats.totalCourses}</div>
             <p className="text-[11px] text-zinc-500">{stats.publishedCourses} Modules Live & Published</p>
@@ -110,14 +113,14 @@ export default function AdminDashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Link
             href="/admin/courses"
-            className="bg-white border border-zinc-200 hover:border-[#d33028] p-6 rounded-xl space-y-3 group transition shadow-sm hover:shadow-md"
+            className="bg-white border border-zinc-200 hover:border-brand p-6 rounded-xl space-y-3 group transition shadow-sm hover:shadow-md"
           >
-            <div className="p-3 bg-[#d33028]/10 text-[#d33028] rounded-lg w-max border border-[#d33028]/30">
+            <div className="p-3 bg-brand/10 text-brand rounded-lg w-max border border-brand/30">
               <BookOpen className="w-6 h-6" />
             </div>
-            <h3 className="font-bold text-zinc-900 text-base group-hover:text-[#d33028] transition">Course Catalog Gatekeeper</h3>
+            <h3 className="font-bold text-zinc-900 text-base group-hover:text-brand transition">Course Catalog Gatekeeper</h3>
             <p className="text-xs text-zinc-500">Approve, edit, publish or draft learning modules across categories.</p>
-            <div className="text-xs font-bold text-[#d33028] flex items-center gap-1 pt-2">
+            <div className="text-xs font-bold text-brand flex items-center gap-1 pt-2">
               <span>Manage Courses</span>
               <ArrowRight className="w-4 h-4" />
             </div>
@@ -125,14 +128,14 @@ export default function AdminDashboardPage() {
 
           <Link
             href="/admin/users"
-            className="bg-white border border-zinc-200 hover:border-[#d33028] p-6 rounded-xl space-y-3 group transition shadow-sm hover:shadow-md"
+            className="bg-white border border-zinc-200 hover:border-brand p-6 rounded-xl space-y-3 group transition shadow-sm hover:shadow-md"
           >
             <div className="p-3 bg-sky-50 text-sky-600 rounded-lg w-max border border-sky-200">
               <Users className="w-6 h-6" />
             </div>
-            <h3 className="font-bold text-zinc-900 text-base group-hover:text-[#d33028] transition">User & Student Management</h3>
+            <h3 className="font-bold text-zinc-900 text-base group-hover:text-brand transition">User & Student Management</h3>
             <p className="text-xs text-zinc-500">Audit student enrollments, inspect progress, and manage platform roles.</p>
-            <div className="text-xs font-bold text-[#d33028] flex items-center gap-1 pt-2">
+            <div className="text-xs font-bold text-brand flex items-center gap-1 pt-2">
               <span>Manage Users</span>
               <ArrowRight className="w-4 h-4" />
             </div>
@@ -140,14 +143,14 @@ export default function AdminDashboardPage() {
 
           <Link
             href="/admin/orders"
-            className="bg-white border border-zinc-200 hover:border-[#d33028] p-6 rounded-xl space-y-3 group transition shadow-sm hover:shadow-md"
+            className="bg-white border border-zinc-200 hover:border-brand p-6 rounded-xl space-y-3 group transition shadow-sm hover:shadow-md"
           >
             <div className="p-3 bg-emerald-50 text-emerald-600 rounded-lg w-max border border-emerald-200">
               <DollarSign className="w-6 h-6" />
             </div>
-            <h3 className="font-bold text-zinc-900 text-base group-hover:text-[#d33028] transition">Orders & Transactions</h3>
+            <h3 className="font-bold text-zinc-900 text-base group-hover:text-brand transition">Orders & Transactions</h3>
             <p className="text-xs text-zinc-500">Inspect Razorpay payment IDs, order timestamps, and revenue logs.</p>
-            <div className="text-xs font-bold text-[#d33028] flex items-center gap-1 pt-2">
+            <div className="text-xs font-bold text-brand flex items-center gap-1 pt-2">
               <span>View Orders</span>
               <ArrowRight className="w-4 h-4" />
             </div>

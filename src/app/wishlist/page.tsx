@@ -37,7 +37,7 @@ export default function WishlistPage() {
             </div>
             <Link
               href="/courses"
-              className="inline-flex items-center gap-2 bg-[#d33028] hover:bg-[#b82720] text-white font-bold text-xs px-6 py-3 rounded-md transition shadow-md"
+              className="inline-flex items-center gap-2 btn-soft font-bold text-xs px-6 py-3 rounded-md transition"
             >
               <span>Explore Courses</span>
             </Link>

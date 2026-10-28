@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Course from '@/models/Course';
 import { MOCK_COURSES } from '@/lib/mockData';
 import { getSafeThumbnail } from '@/lib/types';
+import { stripQuizAnswers } from '@/lib/courseUtils';
 
 export async function GET(request: Request) {
   try {
@@ -47,7 +48,7 @@ export async function GET(request: Request) {
       const obj = doc.toObject();
       const courseId = obj.id || obj._id.toString();
       const thumbnail = getSafeThumbnail(obj.thumbnail, obj.title, obj.categoryName);
-      return { ...obj, id: courseId, _id: courseId, thumbnail };
+      return stripQuizAnswers({ ...obj, id: courseId, _id: courseId, thumbnail });
     });
 
     return NextResponse.json({ success: true, count: normalizedCourses.length, data: normalizedCourses });

@@ -76,7 +76,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             {/* Header */}
             <div className="p-6 border-b border-zinc-200 flex items-center justify-between bg-zinc-50">
               <div className="flex items-center gap-2">
-                <ShoppingBag className="w-5 h-5 text-[#d33028]" />
+                <ShoppingBag className="w-5 h-5 text-brand" />
                 <h2 className="text-base font-bold text-zinc-900">Your Cart ({cartCourses.length})</h2>
               </div>
               <button
@@ -101,7 +101,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <Link
                     href="/courses"
                     onClick={onClose}
-                    className="bg-[#d33028] hover:bg-[#b82720] text-white font-bold text-xs px-5 py-2.5 rounded-md transition"
+                    className="btn-soft font-bold text-xs px-5 py-2.5 rounded-md transition"
                   >
                     Browse Catalog
                   </Link>
@@ -125,7 +125,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                           <p className="text-[11px] text-zinc-500">By {course.instructorName}</p>
                         </div>
                         <div className="flex items-center justify-between pt-1">
-                          <span className="text-xs font-extrabold text-[#d33028]">
+                          <span className="text-xs font-extrabold text-brand">
                             ₹{course.discountPrice || course.price}
                           </span>
                           <button
@@ -156,7 +156,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         placeholder="Enter CREATORS20"
                         value={couponCode}
                         onChange={e => setCouponCode(e.target.value)}
-                        className="w-full bg-white border border-zinc-300 rounded-md pl-8 pr-3 py-2 text-xs text-zinc-900 uppercase placeholder:text-zinc-400 focus:outline-none focus:border-[#d33028]"
+                        className="w-full bg-white border border-zinc-300 rounded-md pl-8 pr-3 py-2 text-xs text-zinc-900 uppercase placeholder:text-zinc-400 focus:outline-none focus:border-brand"
                       />
                     </div>
                     <button
@@ -192,14 +192,14 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   </div>
                   <div className="flex justify-between pt-2 border-t border-zinc-200 text-sm font-extrabold text-zinc-900">
                     <span>Total Amount</span>
-                    <span className="text-[#d33028]">₹{finalTotal.toFixed(2)}</span>
+                    <span className="text-brand">₹{finalTotal.toFixed(2)}</span>
                   </div>
                 </div>
 
                 {/* Checkout Trigger */}
                 <button
                   onClick={handleCheckout}
-                  className="w-full bg-[#d33028] hover:bg-[#b82720] text-white font-bold py-3 rounded-md transition flex items-center justify-center gap-2 shadow-lg text-xs"
+                  className="w-full btn-soft font-bold py-3 rounded-md transition flex items-center justify-center gap-2 text-xs"
                 >
                   <Lock className="w-4 h-4" />
                   <span>Proceed to Razorpay Checkout</span>

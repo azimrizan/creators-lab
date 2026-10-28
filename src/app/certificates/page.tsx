@@ -38,7 +38,7 @@ export default function CertificatesPage() {
             </div>
             <Link
               href="/my-learning"
-              className="inline-flex items-center gap-2 bg-[#d33028] hover:bg-[#b82720] text-white font-bold text-xs px-6 py-3 rounded-md transition shadow-md"
+              className="inline-flex items-center gap-2 btn-soft font-bold text-xs px-6 py-3 rounded-md transition"
             >
               <span>Go to My Learning</span>
             </Link>
@@ -69,7 +69,7 @@ export default function CertificatesPage() {
                       target="_blank"
                       className="bg-zinc-50 hover:bg-zinc-100 border border-zinc-300 text-zinc-800 font-bold text-xs px-4 py-2 rounded-md transition flex items-center gap-1.5"
                     >
-                      <ExternalLink className="w-3.5 h-3.5 text-[#d33028]" />
+                      <ExternalLink className="w-3.5 h-3.5 text-brand" />
                       <span>Public Verification</span>
                     </Link>
 
@@ -79,7 +79,7 @@ export default function CertificatesPage() {
                         e.preventDefault();
                         alert(`Downloading certificate PDF for ${certId}...`);
                       }}
-                      className="bg-[#d33028] hover:bg-[#b82720] text-white font-bold text-xs px-4 py-2 rounded-md transition flex items-center gap-1.5 shadow-md"
+                      className="btn-soft font-bold text-xs px-4 py-2 rounded-md transition flex items-center gap-1.5"
                     >
                       <Download className="w-3.5 h-3.5" />
                       <span>Download PDF</span>

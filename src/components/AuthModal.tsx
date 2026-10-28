@@ -157,9 +157,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
               type="button"
               onClick={() => handleQuickLogin('STUDENT')}
               disabled={isLoading}
-              className="bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 hover:border-[#d33028] p-2.5 rounded-lg text-left transition flex flex-col gap-1 text-xs"
+              className="bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 hover:border-brand p-2.5 rounded-lg text-left transition flex flex-col gap-1 text-xs"
             >
-              <div className="flex items-center gap-1.5 text-[#d33028] font-bold">
+              <div className="flex items-center gap-1.5 text-brand font-bold">
                 <GraduationCap className="w-3.5 h-3.5" />
                 <span>Student</span>
               </div>
@@ -230,7 +230,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                   placeholder="e.g. Maya Sharma"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  className="w-full bg-white border border-zinc-300 rounded-md pl-9 pr-3 py-2 text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#d33028]"
+                  className="w-full bg-white border border-zinc-300 rounded-md pl-9 pr-3 py-2 text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-brand"
                 />
               </div>
             </div>
@@ -246,7 +246,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 placeholder="student@creatorslab.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full bg-white border border-zinc-300 rounded-md pl-9 pr-3 py-2 text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#d33028]"
+                className="w-full bg-white border border-zinc-300 rounded-md pl-9 pr-3 py-2 text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-brand"
               />
             </div>
           </div>
@@ -261,7 +261,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 placeholder="••••••••••••"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full bg-white border border-zinc-300 rounded-md pl-9 pr-3 py-2 text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#d33028]"
+                className="w-full bg-white border border-zinc-300 rounded-md pl-9 pr-3 py-2 text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-brand"
               />
             </div>
           </div>
@@ -275,7 +275,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                   onClick={() => setRole('STUDENT')}
                   className={`py-1.5 rounded-md border text-xs font-semibold ${
                     role === 'STUDENT'
-                      ? 'bg-[#d33028]/10 border-[#d33028] text-[#d33028]'
+                      ? 'bg-brand/10 border-brand text-brand'
                       : 'bg-zinc-50 border-zinc-300 text-zinc-600'
                   }`}
                 >
@@ -299,7 +299,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-[#d33028] hover:bg-[#b82720] text-white font-bold py-2.5 rounded-md transition flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 text-xs mt-2"
+            className="w-full btn-soft font-bold py-2.5 rounded-md transition flex items-center justify-center gap-2 disabled:opacity-50 text-xs mt-2"
           >
             {isLoading ? (
               <>
@@ -318,7 +318,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 <button
                   type="button"
                   onClick={() => setMode('register')}
-                  className="text-[#d33028] font-bold hover:underline"
+                  className="text-brand font-bold hover:underline"
                 >
                   Create one
                 </button>
@@ -329,7 +329,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 <button
                   type="button"
                   onClick={() => setMode('login')}
-                  className="text-[#d33028] font-bold hover:underline"
+                  className="text-brand font-bold hover:underline"
                 >
                   Sign in
                 </button>

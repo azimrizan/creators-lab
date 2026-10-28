@@ -12,7 +12,7 @@ export default function PublicVerifyCertificatePage() {
   return (
     <div className="bg-white text-zinc-900 min-h-screen pt-24 pb-20 flex items-center justify-center p-4">
       <div className="max-w-xl w-full bg-zinc-50 border border-zinc-200 rounded-xl p-8 space-y-6 shadow-xl text-center">
-        <div className="w-16 h-16 bg-[#d33028]/10 text-[#d33028] rounded-full flex items-center justify-center mx-auto border border-[#d33028]/30">
+        <div className="w-16 h-16 bg-brand/10 text-brand rounded-full flex items-center justify-center mx-auto border border-brand/30">
           <Award className="w-8 h-8" />
         </div>
 
@@ -41,7 +41,7 @@ export default function PublicVerifyCertificatePage() {
           <div className="flex justify-between">
             <span className="text-zinc-500">Issuer Security</span>
             <span className="font-bold text-zinc-900 flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#d33028]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-brand" />
               <span>Creators Lab SHA-256</span>
             </span>
           </div>
@@ -50,7 +50,7 @@ export default function PublicVerifyCertificatePage() {
         <div className="pt-2 flex items-center justify-center gap-4">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 bg-[#d33028] hover:bg-[#b82720] text-white font-bold text-xs px-6 py-3 rounded-md transition shadow-md"
+            className="inline-flex items-center gap-2 btn-soft font-bold text-xs px-6 py-3 rounded-md transition"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Creators Lab</span>

@@ -84,11 +84,14 @@ export default function InstructorPage() {
           <div>
             <h1 className="text-3xl font-extrabold text-zinc-900">Instructor Authoring Studio</h1>
             <p className="text-xs text-zinc-500">Publish courses, construct curriculum sections, and attach Cloudflare video streams</p>
+            <Link href="/instructor/ai-studio" className="inline-flex items-center gap-2 mt-2 h-10 px-4 rounded-full btn-soft text-sm font-semibold transition">
+              Open AI Studio: transcripts, quizzes &amp; insights
+            </Link>
           </div>
 
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-[#d33028] hover:bg-[#b82720] text-white text-xs font-bold px-5 py-3 rounded-md transition shadow-md flex items-center gap-2"
+            className="btn-soft text-xs font-bold px-5 py-3 rounded-md transition flex items-center gap-2"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Create New Course</span>
@@ -103,7 +106,7 @@ export default function InstructorPage() {
           </div>
           <div className="bg-zinc-50 border border-zinc-200 p-5 rounded-xl space-y-1 shadow-sm">
             <div className="text-xs text-zinc-500">Total Students Reached</div>
-            <div className="text-2xl font-black text-[#d33028]">
+            <div className="text-2xl font-black text-brand">
               {myCourses.reduce((sum, c) => sum + c.studentCount, 0).toLocaleString()}
             </div>
           </div>
@@ -131,7 +134,7 @@ export default function InstructorPage() {
                     <h3 className="font-bold text-zinc-900 text-sm truncate">{course.title}</h3>
                     <p className="text-xs text-zinc-500 line-clamp-1">{course.subtitle}</p>
                     <div className="flex items-center gap-3 text-[11px] text-zinc-500">
-                      <span className="text-[#d33028] font-bold">₹{course.discountPrice || course.price}</span>
+                      <span className="text-brand font-bold">₹{course.discountPrice || course.price}</span>
                       <span>•</span>
                       <span>{course.studentCount} Students</span>
                     </div>
@@ -163,7 +166,7 @@ export default function InstructorPage() {
                   placeholder="e.g. Advanced System Architecture 2026"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-[#d33028]"
+                  className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-brand"
                 />
               </div>
 
@@ -175,7 +178,7 @@ export default function InstructorPage() {
                   placeholder="High-concurrency microservices and database clustering"
                   value={subtitle}
                   onChange={e => setSubtitle(e.target.value)}
-                  className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-[#d33028]"
+                  className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-brand"
                 />
               </div>
 
@@ -186,7 +189,7 @@ export default function InstructorPage() {
                     type="number"
                     value={discountPrice}
                     onChange={e => setDiscountPrice(Number(e.target.value))}
-                    className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-[#d33028]"
+                    className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-brand"
                   />
                 </div>
                 <div className="space-y-1">
@@ -194,7 +197,7 @@ export default function InstructorPage() {
                   <select
                     value={categoryName}
                     onChange={e => setCategoryName(e.target.value)}
-                    className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-[#d33028]"
+                    className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-brand"
                   >
                     <option value="Cinematography & Directing">Cinematography & Directing</option>
                     <option value="Photography & Visual Arts">Photography & Visual Arts</option>
@@ -212,7 +215,7 @@ export default function InstructorPage() {
                   type="text"
                   value={videoUrl}
                   onChange={e => setVideoUrl(e.target.value)}
-                  className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-[#d33028]"
+                  className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-brand"
                 />
               </div>
 
@@ -226,7 +229,7 @@ export default function InstructorPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#d33028] hover:bg-[#b82720] text-white font-bold rounded-md shadow-md"
+                  className="px-5 py-2 btn-soft font-bold rounded-md"
                 >
                   Publish Course
                 </button>

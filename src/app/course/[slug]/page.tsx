@@ -71,7 +71,7 @@ export default function CourseDetailsPage() {
         <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center w-full">
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-2">
-              <span className="bg-[#d33028]/10 text-[#d33028] text-xs font-bold px-3 py-1 rounded-md border border-[#d33028]/30 uppercase">
+              <span className="bg-brand/10 text-brand text-xs font-bold px-3 py-1 rounded-md border border-brand/30 uppercase">
                 {course.categoryName}
               </span>
               <span className="bg-zinc-100 text-zinc-700 text-xs font-semibold px-3 py-1 rounded-md border border-zinc-200">
@@ -94,7 +94,7 @@ export default function CourseDetailsPage() {
                 <span className="text-zinc-500 font-normal">({course.reviewCount} reviews)</span>
               </div>
               <div className="flex items-center gap-1 text-zinc-600">
-                <Users className="w-4 h-4 text-[#d33028]" />
+                <Users className="w-4 h-4 text-brand" />
                 <span>{course.studentCount.toLocaleString()} enrolled</span>
               </div>
               <div className="text-zinc-500">
@@ -138,15 +138,15 @@ export default function CourseDetailsPage() {
                 <div key={section.id} className="py-1">
                   <button
                     onClick={() => toggleSection(section.id)}
-                    className="w-full py-3 flex items-center justify-between hover:text-[#d33028] transition text-left group"
+                    className="w-full py-3 flex items-center justify-between hover:text-brand transition text-left group"
                   >
                     <div className="flex items-center gap-3">
                       {expandedSections[section.id] ? (
-                        <ChevronUp className="w-4 h-4 text-[#d33028]" />
+                        <ChevronUp className="w-4 h-4 text-brand" />
                       ) : (
-                        <ChevronDown className="w-4 h-4 text-zinc-400 group-hover:text-[#d33028]" />
+                        <ChevronDown className="w-4 h-4 text-zinc-400 group-hover:text-brand" />
                       )}
-                      <span className="font-bold text-zinc-900 group-hover:text-[#d33028] text-sm">{section.title}</span>
+                      <span className="font-bold text-zinc-900 group-hover:text-brand text-sm">{section.title}</span>
                     </div>
                     <span className="text-xs text-zinc-500">{section.lessons.length} lessons</span>
                   </button>
@@ -156,7 +156,7 @@ export default function CourseDetailsPage() {
                       {section.lessons.map(lesson => (
                         <div key={lesson.id} className="py-2.5 flex items-center justify-between text-xs hover:bg-zinc-50 rounded-md px-2 -mx-2 transition">
                           <div className="flex items-center gap-3">
-                            {lesson.contentType === 'VIDEO' && <Play className="w-3.5 h-3.5 text-[#d33028]" />}
+                            {lesson.contentType === 'VIDEO' && <Play className="w-3.5 h-3.5 text-brand" />}
                             {lesson.contentType === 'PDF' && <FileText className="w-3.5 h-3.5 text-sky-500" />}
                             {lesson.contentType === 'QUIZ' && <HelpCircle className="w-3.5 h-3.5 text-amber-500" />}
                             <span className="text-zinc-800">{lesson.title}</span>
@@ -166,7 +166,7 @@ export default function CourseDetailsPage() {
                             {lesson.isFreePreview && (
                               <button
                                 onClick={() => setPreviewVideoUrl(lesson.videoUrl || course.previewVideoUrl)}
-                                className="text-[10px] font-bold text-[#d33028] hover:underline bg-[#d33028]/10 px-2 py-0.5 rounded border border-[#d33028]/20"
+                                className="text-[10px] font-bold text-brand hover:underline bg-brand/10 px-2 py-0.5 rounded border border-brand/20"
                               >
                                 Free Preview
                               </button>
@@ -184,19 +184,19 @@ export default function CourseDetailsPage() {
             </div>
           </div>
 
-          {/* Instructor Bio with Full-Width Red Background (flushed to sides and bottom) */}
-          <div className="-mx-6 sm:-mx-8 -mb-6 sm:-mb-8 p-6 sm:p-8 bg-[#d33028] text-white rounded-b-xl space-y-4">
-            <h2 className="text-lg sm:text-xl font-bold text-white">Instructor Profile</h2>
+          {/* Instructor Bio on a light brand gradient (flushed to sides and bottom) */}
+          <div className="-mx-6 sm:-mx-8 -mb-6 sm:-mb-8 p-6 sm:p-8 panel-soft border-x-0 border-b-0 text-ink rounded-b-xl space-y-4">
+            <h2 className="text-lg sm:text-xl font-bold text-ink">Instructor Profile</h2>
             <div className="flex gap-4 items-start">
               <img
                 src={course.instructorAvatar}
                 alt={course.instructorName}
-                className="w-14 h-14 rounded-full object-cover border-2 border-white/90 shadow-md shrink-0"
+                className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md shrink-0"
               />
               <div className="space-y-1">
-                <h3 className="font-bold text-white text-base">{course.instructorName}</h3>
-                <p className="text-xs text-white/90 font-medium">{course.instructorTitle}</p>
-                <p className="text-xs text-white/85 pt-1 leading-relaxed">
+                <h3 className="font-bold text-ink text-base">{course.instructorName}</h3>
+                <p className="text-xs text-brand font-semibold">{course.instructorTitle}</p>
+                <p className="text-xs text-ink-body pt-1 leading-relaxed">
                   Senior Full-Stack Engineer & Educator with 10+ years experience training over 50,000 developers worldwide.
                 </p>
               </div>
@@ -213,7 +213,7 @@ export default function CourseDetailsPage() {
               onClick={() => setPreviewVideoUrl(course.previewVideoUrl)}
               className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/20 transition"
             >
-              <div className="w-12 h-12 rounded-full bg-[#d33028] text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition">
+              <div className="w-12 h-12 rounded-full btn-soft flex items-center justify-center group-hover:scale-110 transition">
                 <Play className="w-6 h-6 fill-current translate-x-0.5" />
               </div>
             </button>
@@ -234,7 +234,7 @@ export default function CourseDetailsPage() {
           <div className="space-y-3">
             <button
               onClick={handleEnrollClick}
-              className="w-full bg-[#d33028] hover:bg-[#b82720] text-white font-bold py-3 rounded-md transition shadow-lg flex items-center justify-center gap-2 text-xs"
+              className="w-full btn-soft font-bold py-3 rounded-md transition flex items-center justify-center gap-2 text-xs"
             >
               {isEnrolled ? (
                 <>
@@ -255,7 +255,7 @@ export default function CourseDetailsPage() {
                 disabled={isInCart}
                 className={`w-full py-2.5 rounded-md border text-xs font-semibold flex items-center justify-center gap-2 transition ${
                   isInCart
-                    ? 'bg-zinc-100 border-zinc-200 text-[#d33028]'
+                    ? 'bg-zinc-100 border-zinc-200 text-brand'
                     : 'bg-zinc-100 hover:bg-zinc-200 border-zinc-300 text-zinc-800'
                 }`}
               >

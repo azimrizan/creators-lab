@@ -45,7 +45,7 @@ export default function AdminOrdersPage() {
                     <div className="font-bold text-zinc-900">{ord.userName}</div>
                     <div className="text-[11px] text-zinc-500">{ord.userEmail}</div>
                   </td>
-                  <td className="p-4 font-semibold text-[#d33028]">{ord.paymentGateway}</td>
+                  <td className="p-4 font-semibold text-brand">{ord.paymentGateway}</td>
                   <td className="p-4 font-mono text-[11px] text-zinc-500">{ord.paymentId}</td>
                   <td className="p-4 font-extrabold text-emerald-700">₹{ord.totalAmount.toFixed(2)}</td>
                   <td className="p-4">

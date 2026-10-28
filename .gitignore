@@ -40,3 +40,6 @@ atlas-credentials*.env
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# generated dubbed audio tracks
+/storage

@@ -108,7 +108,7 @@ export default function AdminCoursesPage() {
 
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-[#d33028] hover:bg-[#b82720] text-white text-xs font-bold px-4 py-2.5 rounded-md transition flex items-center gap-2 shadow-md"
+            className="btn-soft text-xs font-bold px-4 py-2.5 rounded-md transition flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             <span>Create New Course</span>
@@ -140,7 +140,7 @@ export default function AdminCoursesPage() {
                       </div>
                     </td>
                     <td className="p-4 font-medium text-zinc-900">{course.instructorName}</td>
-                    <td className="p-4 font-extrabold text-[#d33028]">₹{course.discountPrice || course.price}</td>
+                    <td className="p-4 font-extrabold text-brand">₹{course.discountPrice || course.price}</td>
                     <td className="p-4">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
                         course.status === 'PUBLISHED'
@@ -186,7 +186,7 @@ export default function AdminCoursesPage() {
                   placeholder="e.g. Master Docker & Kubernetes"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-[#d33028]"
+                  className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-brand"
                 />
               </div>
 
@@ -198,7 +198,7 @@ export default function AdminCoursesPage() {
                   placeholder="e.g. From containers to production cluster deployment"
                   value={subtitle}
                   onChange={e => setSubtitle(e.target.value)}
-                  className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-[#d33028]"
+                  className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-brand"
                 />
               </div>
 
@@ -208,7 +208,7 @@ export default function AdminCoursesPage() {
                   <select
                     value={instructorId}
                     onChange={e => setInstructorId(e.target.value)}
-                    className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-[#d33028]"
+                    className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-brand"
                   >
                     {instructorsList.map(inst => (
                       <option key={inst.id || (inst as any)._id} value={inst.id || (inst as any)._id}>
@@ -223,7 +223,7 @@ export default function AdminCoursesPage() {
                   <select
                     value={categoryName}
                     onChange={e => setCategoryName(e.target.value)}
-                    className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-[#d33028]"
+                    className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-brand"
                   >
                     <option value="Cinematography & Directing">Cinematography & Directing</option>
                     <option value="Photography & Visual Arts">Photography & Visual Arts</option>
@@ -242,7 +242,7 @@ export default function AdminCoursesPage() {
                     type="number"
                     value={discountPrice}
                     onChange={e => setDiscountPrice(Number(e.target.value))}
-                    className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-[#d33028]"
+                    className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-brand"
                   />
                 </div>
 
@@ -252,14 +252,14 @@ export default function AdminCoursesPage() {
                     type="text"
                     value={thumbnail}
                     onChange={e => setThumbnail(e.target.value)}
-                    className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-[#d33028]"
+                    className="w-full bg-white border border-zinc-300 rounded-md p-2.5 text-zinc-900 focus:outline-none focus:border-brand"
                   />
                 </div>
               </div>
 
               {/* Curriculum Section */}
               <div className="pt-2 border-t border-zinc-200 space-y-3">
-                <h4 className="font-bold uppercase text-[10px] tracking-wider text-[#d33028]">Curriculum & Video Attachment</h4>
+                <h4 className="font-bold uppercase text-[10px] tracking-wider text-brand">Curriculum & Video Attachment</h4>
                 <div className="space-y-2 bg-zinc-50 p-3 rounded-md border border-zinc-200">
                   <input
                     type="text"
@@ -288,7 +288,7 @@ export default function AdminCoursesPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#d33028] hover:bg-[#b82720] text-white font-bold rounded-md shadow-md"
+                  className="px-5 py-2 btn-soft font-bold rounded-md"
                 >
                   Publish Course to Atlas
                 </button>

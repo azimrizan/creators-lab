@@ -4,6 +4,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User, Course, Order, Certificate, UserRole, getSafeThumbnail } from './types';
 import { MOCK_COURSES, MOCK_ORDERS, MOCK_CERTIFICATES } from './mockData';
+import { stripQuizAnswers } from './courseUtils';
 
 interface ProgressMap {
   [courseId: string]: {
@@ -32,6 +33,8 @@ interface AppStore {
   // Data Fetching
   fetchCoursesFromApi: () => Promise<void>;
   fetchOrdersFromApi: () => Promise<void>;
+  fetchCertificatesFromApi: () => Promise<void>;
+  hydrateCourseProgress: (courseId: string) => Promise<void>;
 
   // Courses & Data State
   courses: Course[];
@@ -67,7 +70,7 @@ export const useAppStore = create<AppStore>()(
       currentUser: GUEST_USER,
       setCurrentUser: (user: User) => set({ currentUser: user }),
 
-      courses: MOCK_COURSES,
+      courses: MOCK_COURSES.map(stripQuizAnswers),
       orders: MOCK_ORDERS,
       certificates: MOCK_CERTIFICATES,
 
@@ -97,6 +100,41 @@ export const useAppStore = create<AppStore>()(
         } catch (e) {}
       },
 
+      fetchCertificatesFromApi: async () => {
+        try {
+          const res = await fetch('/api/certificates');
+          const data = await res.json();
+          if (data.success && Array.isArray(data.certificates)) {
+            set({ certificates: data.certificates });
+          }
+        } catch (e) {}
+      },
+
+      // Merge the learner's saved server progress into local state (server wins for completion).
+      hydrateCourseProgress: async (courseId: string) => {
+        if (get().currentUser.id === 'guest') return;
+        try {
+          const res = await fetch(`/api/progress?courseId=${encodeURIComponent(courseId)}`);
+          const data = await res.json();
+          if (!data.success || !Array.isArray(data.progress)) return;
+          set(state => {
+            const current = state.userProgress[courseId] || { completedLessonIds: [], lastPositionSec: {} };
+            const completed = new Set(current.completedLessonIds);
+            const positions = { ...current.lastPositionSec };
+            data.progress.forEach((p: { lessonId: string; positionSec: number; completed: boolean }) => {
+              if (p.completed) completed.add(p.lessonId);
+              if (p.positionSec > 0) positions[p.lessonId] = p.positionSec;
+            });
+            return {
+              userProgress: {
+                ...state.userProgress,
+                [courseId]: { completedLessonIds: Array.from(completed), lastPositionSec: positions }
+              }
+            };
+          });
+        } catch (e) {}
+      },
+
       userProgress: {},
 
       markLessonComplete: (courseId: string, lessonId: string) => {
@@ -122,29 +160,7 @@ export const useAppStore = create<AppStore>()(
             }).catch(() => {});
           }
 
-          // Check if entire course is completed to issue certificate
-          const targetCourse = state.courses.find(c => c.id === courseId);
-          if (targetCourse) {
-            const allLessonIds = targetCourse.sections.flatMap(s => s.lessons.map(l => l.id));
-            const isAllDone = allLessonIds.every(id => updatedCompleted.includes(id));
-            if (isAllDone && !state.certificates.some(c => c.courseId === courseId)) {
-              const newCert: Certificate = {
-                id: `cert-${Date.now()}`,
-                certificateNumber: `CERT-LH-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-                userId: state.currentUser.id,
-                userName: state.currentUser.name,
-                courseId: targetCourse.id,
-                courseTitle: targetCourse.title,
-                issueDate: new Date().toISOString().split('T')[0],
-                instructorName: targetCourse.instructorName
-              };
-              return {
-                userProgress: newProgress,
-                certificates: [newCert, ...state.certificates]
-              };
-            }
-          }
-
+          // Certificates are issued by the server when the learner passes the final exam.
           return { userProgress: newProgress };
         });
       },
@@ -298,7 +314,9 @@ export const useAppStore = create<AppStore>()(
       }
     }),
     {
-      name: 'lms-app-store-v8'
+      name: 'lms-app-store-v9',
+      // Courses always come fresh from the API; persisting them could keep stale data.
+      partialize: ({ courses, ...rest }) => rest
     }
   )
 );

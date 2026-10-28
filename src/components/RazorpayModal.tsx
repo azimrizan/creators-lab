@@ -81,7 +81,7 @@ export default function RazorpayModal({ isOpen, onClose, course, amount, courseT
         {/* Header */}
         <div className="bg-zinc-50 border-b border-zinc-200 p-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-[#d33028]/10 text-[#d33028] p-2.5 rounded-lg border border-[#d33028]/30">
+            <div className="bg-brand/10 text-brand p-2.5 rounded-lg border border-brand/30">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
@@ -131,7 +131,7 @@ export default function RazorpayModal({ isOpen, onClose, course, amount, courseT
               </div>
               <div className="border-t border-zinc-200 pt-2 flex justify-between font-extrabold text-zinc-900 text-sm">
                 <span>Total Payable</span>
-                <span className="text-[#d33028]">₹{finalAmount}</span>
+                <span className="text-brand">₹{finalAmount}</span>
               </div>
             </div>
 
@@ -144,7 +144,7 @@ export default function RazorpayModal({ isOpen, onClose, course, amount, courseT
                   onClick={() => setPaymentMethod('upi')}
                   className={`flex flex-col items-center gap-1.5 p-3 rounded-md border text-xs font-medium transition ${
                     paymentMethod === 'upi'
-                      ? 'bg-[#d33028]/10 border-[#d33028] text-[#d33028]'
+                      ? 'bg-brand/10 border-brand text-brand'
                       : 'bg-zinc-50 border-zinc-200 text-zinc-600 hover:bg-zinc-100'
                   }`}
                 >
@@ -157,7 +157,7 @@ export default function RazorpayModal({ isOpen, onClose, course, amount, courseT
                   onClick={() => setPaymentMethod('card')}
                   className={`flex flex-col items-center gap-1.5 p-3 rounded-md border text-xs font-medium transition ${
                     paymentMethod === 'card'
-                      ? 'bg-[#d33028]/10 border-[#d33028] text-[#d33028]'
+                      ? 'bg-brand/10 border-brand text-brand'
                       : 'bg-zinc-50 border-zinc-200 text-zinc-600 hover:bg-zinc-100'
                   }`}
                 >
@@ -170,7 +170,7 @@ export default function RazorpayModal({ isOpen, onClose, course, amount, courseT
                   onClick={() => setPaymentMethod('netbanking')}
                   className={`flex flex-col items-center gap-1.5 p-3 rounded-md border text-xs font-medium transition ${
                     paymentMethod === 'netbanking'
-                      ? 'bg-[#d33028]/10 border-[#d33028] text-[#d33028]'
+                      ? 'bg-brand/10 border-brand text-brand'
                       : 'bg-zinc-50 border-zinc-200 text-zinc-600 hover:bg-zinc-100'
                   }`}
                 >
@@ -188,7 +188,7 @@ export default function RazorpayModal({ isOpen, onClose, course, amount, courseT
                   placeholder="username@okaxis or 9876543210@paytm"
                   value={upiId}
                   onChange={e => setUpiId(e.target.value)}
-                  className="w-full bg-white border border-zinc-300 rounded-md px-3.5 py-2 text-xs text-zinc-900 focus:outline-none focus:border-[#d33028]"
+                  className="w-full bg-white border border-zinc-300 rounded-md px-3.5 py-2 text-xs text-zinc-900 focus:outline-none focus:border-brand"
                 />
               </div>
             )}
@@ -197,7 +197,7 @@ export default function RazorpayModal({ isOpen, onClose, course, amount, courseT
             <button
               onClick={handlePay}
               disabled={isProcessing}
-              className="w-full bg-[#d33028] hover:bg-[#b82720] text-white font-bold py-3 rounded-md transition flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 text-xs"
+              className="w-full btn-soft font-bold py-3 rounded-md transition flex items-center justify-center gap-2 disabled:opacity-50 text-xs"
             >
               {isProcessing ? (
                 <>
